@@ -8,14 +8,14 @@ import math
 
 import pytest
 
-from genesys_memory.context import current_user_id
-from genesys_memory.mcp.tools import MCPToolHandler
-from genesys_memory.retrieval.date_anchor import (
+from papez.context import current_user_id
+from papez.mcp.tools import MCPToolHandler
+from papez.retrieval.date_anchor import (
     node_matches_anchor,
     parse_query_date_anchor,
 )
-from genesys_memory.storage.cache import NullCacheProvider
-from genesys_memory.storage.memory import InMemoryGraphProvider
+from papez.storage.cache import NullCacheProvider
+from papez.storage.memory import InMemoryGraphProvider
 
 
 @pytest.fixture(autouse=True)
@@ -122,7 +122,7 @@ class TestHybridRRF:
 # ---------------------------------------------------------------------------
 class TestKeywordPluralStem:
     def test_stem_plural_function(self):
-        from genesys_memory.mcp.tools import _stem_plural
+        from papez.mcp.tools import _stem_plural
         assert _stem_plural("cats") == "cat"
         assert _stem_plural("classes") == "class"
         assert _stem_plural("books") == "book"

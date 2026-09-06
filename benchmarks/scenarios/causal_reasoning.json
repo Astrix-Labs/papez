@@ -137,19 +137,19 @@
     {
       "question": "Trace the complete evidence chain that proves learning Python was the right decision.",
       "ground_truth": "Python suggestion -> pandas course -> sales CSV analysis -> Q3 revenue drop discovery -> root cause analysis (staffing shortage) -> 5 new hires -> promotion to data analyst -> real-time dashboard -> caught packaging bottleneck proactively. Each step causally depends on the previous one.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "evidence_tracing"
     },
     {
       "question": "What is the single most causally important memory and why?",
       "ground_truth": "The manager's suggestion to learn Python is the root cause of the entire chain. It's the most structurally important because removing it would collapse the entire downstream chain: no Python skills -> no data analysis -> no revenue problem discovery -> no root cause fix -> no promotion -> no dashboard -> no proactive bottleneck detection.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "structural_importance"
     },
     {
       "question": "Which causal chain — the operations fix or the marketing campaign — had more downstream impact?",
       "ground_truth": "The operations chain (staffing fix) had far more downstream impact: it led to a promotion, a new role, a dashboard that catches future problems proactively, and ongoing organizational capability. The marketing campaign generated $150K in revenue but had no further downstream effects. The operations chain created lasting structural change.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "chain_comparison"
     }
   ]

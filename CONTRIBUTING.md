@@ -1,19 +1,19 @@
-# Contributing to Genesys
+# Contributing to Papez
 
-Thanks for your interest in contributing! Genesys is open source under the [GNU Affero General Public License v3.0](LICENSE).
+Thanks for your interest in contributing! Papez is open source under the [GNU Affero General Public License v3.0](LICENSE).
 
 ## Contributor License Agreement
 
 All contributors must agree to our [Contributor License Agreement](CLA.md) before their code can be merged. By opening a pull request, you acknowledge that you have read the CLA and agree to its terms. Your git commit metadata (name and email) serves as your electronic signature.
 
-The CLA grants Astrix Labs the right to include your contributions under the project's license (AGPLv3) and, where necessary, under commercial license terms for the hosted Genesys service. You retain copyright over your contributions.
+The CLA grants Astrix Labs the right to include your contributions under the project's license (AGPLv3) and, where necessary, under commercial license terms for the hosted Papez service. You retain copyright over your contributions.
 
 ## Architecture overview
 
-Genesys Memory is a scoring engine, causal graph, and lifecycle manager for AI memory. The codebase is organized as:
+Papez is a scoring engine, causal graph, and lifecycle manager for AI memory. The codebase is organized as:
 
 ```
-src/genesys_memory/
+src/papez/
 ├── engine/             # Scoring, transitions, forgetting, reactivation
 │   ├── config.py       # All tunable thresholds (env-configurable)
 │   ├── scoring.py      # Three-force multiplicative decay scoring
@@ -43,14 +43,14 @@ Key design principles:
 
 ```bash
 # Run the lightweight MCP server (stdio transport, no infrastructure needed)
-python -m genesys_memory
+python -m papez
 ```
 
 ## Code style
 
 - **Python 3.11+**, async-first
 - **Linting**: `ruff check src/` (config in `pyproject.toml`, line length 120)
-- **Type checking**: `mypy src/genesys_memory --ignore-missing-imports` (strict mode configured)
+- **Type checking**: `mypy src/papez --ignore-missing-imports` (strict mode configured)
 - **Formatting**: follow existing patterns — type hints throughout, minimal comments
 - Engine thresholds live in `engine/config.py` and are env-configurable. Don't hardcode magic numbers in engine files.
 
@@ -61,7 +61,7 @@ python -m genesys_memory
 pytest tests/ -v
 
 # With coverage
-pytest tests/ -v --cov=src/genesys_memory --cov-report=term-missing
+pytest tests/ -v --cov=src/papez --cov-report=term-missing
 ```
 
 Tests are in `tests/` and use `pytest-asyncio` (auto mode). When adding new engine logic, add corresponding test cases in the relevant test file.
@@ -82,7 +82,7 @@ Open an issue on GitHub with:
 
 ## Good first issues
 
-Look for issues labeled [`good first issue`](https://github.com/Astrix-Labs/genesys/labels/good%20first%20issue). These are scoped, well-defined tasks suitable for new contributors.
+Look for issues labeled [`good first issue`](https://github.com/Astrix-Labs/papez/labels/good%20first%20issue). These are scoped, well-defined tasks suitable for new contributors.
 
 ## Code of conduct
 

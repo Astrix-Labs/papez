@@ -11,12 +11,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.context import current_org_ids, current_user_id, current_user_role
-from genesys_memory.mcp.tools import MCPToolHandler, _caller_owns_node
-from genesys_memory.models.edge import MemoryEdge
-from genesys_memory.models.enums import EdgeType, MemoryStatus, Visibility
-from genesys_memory.models.node import MemoryNode
-from genesys_memory.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
+from papez.context import current_org_ids, current_user_id, current_user_role
+from papez.mcp.tools import MCPToolHandler, _caller_owns_node
+from papez.models.edge import MemoryEdge
+from papez.models.enums import EdgeType, MemoryStatus, Visibility
+from papez.models.node import MemoryNode
+from papez.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
 
 
 def _make_node(**kwargs) -> MemoryNode:
@@ -322,7 +322,7 @@ class TestRelatedToVisibility:
         current_user_id.reset(token_b)
 
         # User A stores a memory with related_to pointing at user B's private node
-        with caplog.at_level(logging.WARNING, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.WARNING, logger="papez.mcp.tools"):
             result = await handler.memory_store(
                 content="should not link to b's node",
                 related_to=[str(private_node.id)],
@@ -376,7 +376,7 @@ class TestMCPServerDispatch:
     @pytest.mark.asyncio
     async def test_mcp_server_promote_to_org_exposed(self):
         """promote_to_org should be in the tool list."""
-        from genesys_memory.server import list_tools
+        from papez.server import list_tools
         tool_list = await list_tools()
         names = {t.name for t in tool_list}
         assert "promote_to_org" in names
@@ -384,7 +384,7 @@ class TestMCPServerDispatch:
     @pytest.mark.asyncio
     async def test_mcp_server_memory_store_accepts_visibility(self):
         """memory_store schema should include visibility and org_id."""
-        from genesys_memory.server import list_tools
+        from papez.server import list_tools
         tool_list = await list_tools()
         store_tool = next(t for t in tool_list if t.name == "memory_store")
         props = store_tool.inputSchema["properties"]
@@ -394,7 +394,7 @@ class TestMCPServerDispatch:
     @pytest.mark.asyncio
     async def test_mcp_server_promote_schema_has_required_fields(self):
         """promote_to_org schema should have node_id and org_id as required."""
-        from genesys_memory.server import list_tools
+        from papez.server import list_tools
         tool_list = await list_tools()
         promote_tool = next(t for t in tool_list if t.name == "promote_to_org")
         assert "node_id" in promote_tool.inputSchema["required"]
@@ -406,7 +406,7 @@ class TestMCPServerDispatch:
     @pytest.mark.asyncio
     async def test_mcp_dispatch_passes_visibility_through(self):
         """The dispatch wiring should actually pass visibility to the handler."""
-        from genesys_memory.server import _TOOL_DISPATCH
+        from papez.server import _TOOL_DISPATCH
         _, required, optional = _TOOL_DISPATCH["memory_store"]
         assert "visibility" in optional
         assert "org_id" in optional
@@ -422,7 +422,7 @@ class TestParameterCapping:
         """k > 100 should be capped to 100."""
         handler, graph = handler_with_graph
 
-        with caplog.at_level(logging.INFO, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.INFO, logger="papez.mcp.tools"):
             result = await handler.memory_recall(query="test", k=500)
 
         assert "capped" in caplog.text
@@ -434,7 +434,7 @@ class TestParameterCapping:
         """k <= 100 should not be capped or logged."""
         handler, graph = handler_with_graph
 
-        with caplog.at_level(logging.INFO, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.INFO, logger="papez.mcp.tools"):
             result = await handler.memory_recall(query="test", k=10)
 
         assert "capped" not in caplog.text
@@ -448,7 +448,7 @@ class TestParameterCapping:
         node = _make_node(content_summary="start node")
         await graph.create_node(node)
 
-        with caplog.at_level(logging.INFO, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.INFO, logger="papez.mcp.tools"):
             result = await handler.memory_traverse(node_id=str(node.id), depth=50)
 
         assert "capped" in caplog.text
@@ -462,7 +462,7 @@ class TestParameterCapping:
         node = _make_node(content_summary="start node")
         await graph.create_node(node)
 
-        with caplog.at_level(logging.INFO, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.INFO, logger="papez.mcp.tools"):
             result = await handler.memory_traverse(node_id=str(node.id), depth=3)
 
         assert "capped" not in caplog.text

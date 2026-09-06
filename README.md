@@ -1,33 +1,33 @@
-<!-- mcp-name: io.github.Astrix-Labs/genesys-memory -->
-[![PyPI](https://img.shields.io/pypi/v/genesys-memory)](https://pypi.org/project/genesys-memory/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/genesys-memory)](https://pypi.org/project/genesys-memory/)
-[![CI](https://github.com/Astrix-Labs/genesys/actions/workflows/ci.yml/badge.svg)](https://github.com/Astrix-Labs/genesys/actions/workflows/ci.yml)
+<!-- mcp-name: io.github.Astrix-Labs/papez -->
+[![PyPI](https://img.shields.io/pypi/v/papez)](https://pypi.org/project/papez/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/papez)](https://pypi.org/project/papez/)
+[![CI](https://github.com/Astrix-Labs/papez/actions/workflows/ci.yml/badge.svg)](https://github.com/Astrix-Labs/papez/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-# Genesys
+# Papez
 
 **The intelligence layer for AI memory.**
 
-> Genesys doesn't just remember what happened; it remembers why. A scoring engine + causal graph + lifecycle manager for AI agent memory. Speaks MCP natively.
+> Papez doesn't just remember what happened; it remembers why. A scoring engine + causal graph + lifecycle manager for AI agent memory. Speaks MCP natively.
 
 ## LoCoMo benchmark (certified)
 
 | System | Score | Protocol |
 |---|---|---|
-| **Genesys Memory** | **85.55 ± 0.37** | Frozen: gpt-4o-mini answerer + judge, temp 0, n=1,540, cats 1–4, 10 runs (July 2026) |
+| **Papez** | **85.55 ± 0.37** | Frozen: gpt-4o-mini answerer + judge, temp 0, n=1,540, cats 1–4, 10 runs (July 2026) |
 | Zep | 75.14 | Comparable published setup |
 | Mem0 | 66.9 | Comparable published setup (Mem0 paper) |
 
-Self-reported vendor figures above ~90 use different answerers/judges and are not comparable — the oracle retrieval ceiling under this frozen protocol is 94.9. Reproduce it yourself: [Astrix-Labs/locomo-harness](https://github.com/Astrix-Labs/locomo-harness) · [full methodology](https://genesys.astrixlabs.ai/developers/methodology) · [per-run results](https://genesys.astrixlabs.ai/benchmarks/locomo).
+Self-reported vendor figures above ~90 use different answerers/judges and are not comparable — the oracle retrieval ceiling under this frozen protocol is 94.9. Reproduce it yourself: [Astrix-Labs/locomo-harness](https://github.com/Astrix-Labs/locomo-harness) · [full methodology](https://papez.ai/developers/methodology) · [per-run results](https://papez.ai/benchmarks/locomo).
 
-**Hosted product:** [genesys.astrixlabs.ai](https://genesys.astrixlabs.ai) — your personal memory for AI, carried across ChatGPT, Claude, and every MCP app · [Pricing](https://genesys.astrixlabs.ai/pricing) · [Developer docs](https://genesys.astrixlabs.ai/developers) · [Benchmark methodology](https://genesys.astrixlabs.ai/developers/methodology) (85.55 on LoCoMo, certified over 10 runs, receipts published)
+**Hosted product:** [papez.ai](https://papez.ai) — your personal memory for AI, carried across ChatGPT, Claude, and every MCP app · [Pricing](https://papez.ai/pricing) · [Developer docs](https://papez.ai/developers) · [Benchmark methodology](https://papez.ai/developers/methodology) (85.55 on LoCoMo, certified over 10 runs, receipts published)
 <img width="1512" height="827" alt="image" src="https://github.com/user-attachments/assets/d152aa07-a852-4b8e-9f98-942d0bebd497" />
 
 ## What is this
 
-Genesys is a scoring engine, causal graph, and lifecycle manager for AI memory. Memories are scored by a multiplicative formula (relevance × connectivity × reactivation), connected in a causal graph, and actively forgotten when they become irrelevant.
+Papez is a scoring engine, causal graph, and lifecycle manager for AI memory. Memories are scored by a multiplicative formula (relevance × connectivity × reactivation), connected in a causal graph, and actively forgotten when they become irrelevant.
 
-This package (`genesys-memory`) is the core library: an in-memory causal graph engine with optional JSON persistence, plus a stdio MCP server. It has no database dependency and no REST API. A hosted product built on top of this library — with Postgres, additional storage backends, and a REST/HTTP MCP API — is available separately at `genesys-api.astrixlabs.ai`; it is not part of this package.
+This package (`papez`) is the core library: an in-memory causal graph engine with optional JSON persistence, plus a stdio MCP server. It has no database dependency and no REST API. A hosted product built on top of this library — with Postgres, additional storage backends, and a REST/HTTP MCP API — is available separately at `api.papez.ai`; it is not part of this package.
 
 ## Why
 
@@ -35,35 +35,35 @@ This package (`genesys-memory`) is the core library: an in-memory causal graph e
 - **No forgetting = no intelligence.** Real memory systems forget. Without active pruning, your AI drowns in stale context.
 - **No causal reasoning.** Vector similarity can't answer "why did I choose X?" — you need a graph.
 
-Your AI remembers everything but understands nothing. Genesys fixes that.
+Your AI remembers everything but understands nothing. Papez fixes that.
 
 ## Quick Start
 
 Install the package. The base install has zero database dependencies — state lives in memory and is optionally persisted to a JSON file.
 
 ```bash
-pip install genesys-memory
+pip install papez
 ```
 
 Optional extras:
 
 ```bash
-pip install 'genesys-memory[openai]'      # OpenAI embeddings
-pip install 'genesys-memory[local]'       # Local embeddings (sentence-transformers, no API key)
-pip install 'genesys-memory[anthropic]'   # LLM-based causal inference (consolidation, contradiction detection)
+pip install 'papez[openai]'      # OpenAI embeddings
+pip install 'papez[local]'       # Local embeddings (sentence-transformers, no API key)
+pip install 'papez[anthropic]'   # LLM-based causal inference (consolidation, contradiction detection)
 ```
 
 Run the stdio MCP server directly:
 
 ```bash
-python3 -m genesys_memory
+python3 -m papez
 ```
 
 ### From source
 
 ```bash
-git clone https://github.com/Astrix-Labs/genesys.git
-cd genesys
+git clone https://github.com/Astrix-Labs/papez.git
+cd papez
 pip install -e '.[dev]'
 pytest tests/
 ```
@@ -73,7 +73,7 @@ pytest tests/
 ### Claude Code
 
 ```bash
-claude mcp add genesys -- python -m genesys_memory
+claude mcp add papez -- python -m papez
 ```
 
 ### Claude Desktop
@@ -83,9 +83,9 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "genesys": {
+    "papez": {
       "command": "python",
-      "args": ["-m", "genesys_memory"]
+      "args": ["-m", "papez"]
     }
   }
 }
@@ -193,15 +193,17 @@ Memories can also be promoted to **core** status — structurally important memo
 
 ## Benchmark Results
 
-We've run internal evaluations against the [LoCoMo](https://arxiv.org/abs/2402.06397) long-conversation memory benchmark during development. These are self-reported, run with our own harness (category 5 — adversarial questions with disputed ground truth — excluded), and not independently reproduced, so treat them as directional rather than a verified claim. Reproduction scripts are in [`benchmarks/`](benchmarks/) if you want to run your own numbers.
+See the [certified LoCoMo results](#locomo-benchmark-certified) at the top of this README: **85.55 ± 0.37** over 10 runs under a frozen protocol (gpt-4o-mini answerer and judge, temperature 0, n=1,540, categories 1–4). Category 5 — adversarial questions with disputed ground truth — is excluded, matching the comparable published setups.
+
+Every run is reproducible: the harness is at [Astrix-Labs/locomo-harness](https://github.com/Astrix-Labs/locomo-harness), with [full methodology](https://papez.ai/developers/methodology) and [per-run results](https://papez.ai/benchmarks/locomo) published. Reproduction scripts for the in-repo scenarios are in [`benchmarks/`](benchmarks/).
 
 ## Storage backend
 
 This package ships one storage backend: an in-memory causal graph (`storage/memory.py`) with optional JSON persistence via `GENESYS_PERSIST_PATH`. No database is required.
 
-Additional backends — Postgres/pgvector, FalkorDB, MongoDB, and an Obsidian vault adapter — along with a REST API, OAuth, and multi-user auth, are part of the hosted product at `genesys-api.astrixlabs.ai` and are not included in this repo.
+Additional backends — Postgres/pgvector, FalkorDB, MongoDB, and an Obsidian vault adapter — along with a REST API, OAuth, and multi-user auth, are part of the hosted product at `api.papez.ai` and are not included in this repo.
 
-Want a different storage backend for the open-source library? Implement the provider protocols in [`storage/base.py`](src/genesys_memory/storage/base.py) and bring your own.
+Want a different storage backend for the open-source library? Implement the provider protocols in [`storage/base.py`](src/papez/storage/base.py) and bring your own.
 
 ## Configuration
 
@@ -254,7 +256,7 @@ The same embedder-aware pattern governs recall filtering:
 ### Scoring knobs
 
 The three-force scoring formula and its lifecycle thresholds are all
-env-configurable (see [`engine/config.py`](src/genesys_memory/engine/config.py) and
+env-configurable (see [`engine/config.py`](src/papez/engine/config.py) and
 [`docs/scoring.md`](docs/scoring.md)): `GENESYS_ACTR_DECAY`,
 `GENESYS_RELEVANCE_VECTOR_WEIGHT`, `GENESYS_RELEVANCE_KEYWORD_WEIGHT`,
 `GENESYS_MIN_CONNECTIVITY`, `GENESYS_FORGETTING_THRESHOLD`, the `GENESYS_DORMANCY_*`
@@ -264,7 +266,7 @@ See [`.env.example`](.env.example) for all options.
 
 ## Built by
 
-Genesys is built by [Rishi Meka](https://github.com/rishimeka) at [Astrix Labs](https://astrixlabs.ai). It came out of frustration with re-explaining project context to Claude every session. The goal is the intelligence layer between your LLM and your memory — fully open source.
+Papez is built by [Rishi Meka](https://github.com/rishimeka) at [Astrix Labs](https://astrixlabs.ai). It came out of frustration with re-explaining project context to Claude every session. The goal is the intelligence layer between your LLM and your memory — fully open source.
 
 ## Contributing
 
@@ -274,4 +276,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 [AGPL-3.0-or-later](LICENSE)
 
-> **Note:** Genesys releases prior to v0.3.6 were documented as Apache 2.0 in error. The LICENSE file has always contained the AGPLv3 text. From v0.3.6 onward, all documentation correctly references AGPL-3.0-or-later with a Contributor License Agreement.
+> **Note:** Papez releases prior to v0.3.6 were documented as Apache 2.0 in error. The LICENSE file has always contained the AGPLv3 text. From v0.3.6 onward, all documentation correctly references AGPL-3.0-or-later with a Contributor License Agreement.

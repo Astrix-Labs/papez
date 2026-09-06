@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.engine.forgetting import sweep_for_forgetting
-from genesys_memory.models.enums import MemoryStatus
-from genesys_memory.models.node import MemoryNode
+from papez.engine.forgetting import sweep_for_forgetting
+from papez.models.enums import MemoryStatus
+from papez.models.node import MemoryNode
 
 
 def _make_orphan_node(**kwargs) -> MemoryNode:

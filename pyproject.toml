@@ -1,9 +1,9 @@
 [project]
-name = "genesys-memory"
+name = "papez"
 dynamic = ["version"]
-description = "The intelligence layer for AI memory — scoring, causal inference, lifecycle management, and active forgetting"
+description = "Papez: the open-source memory engine for AI agents. Multiplicative scoring, a causal graph, lifecycle management, and active forgetting"
 readme = "README.md"
-authors = [{name = "Genesys Contributors"}]
+authors = [{name = "Papez Contributors"}]
 license = {text = "AGPL-3.0-or-later"}
 requires-python = ">=3.11"
 keywords = ["memory", "ai", "mcp", "causal-graph", "agents"]
@@ -44,12 +44,12 @@ dev = [
 ]
 
 [project.scripts]
-genesys-memory = "genesys_memory.__main__:main"
+papez = "papez.__main__:main"
 
 [project.urls]
-Homepage = "https://github.com/Astrix-Labs/genesys"
-Repository = "https://github.com/Astrix-Labs/genesys"
-Issues = "https://github.com/Astrix-Labs/genesys/issues"
+Homepage = "https://github.com/Astrix-Labs/papez"
+Repository = "https://github.com/Astrix-Labs/papez"
+Issues = "https://github.com/Astrix-Labs/papez/issues"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -67,10 +67,13 @@ strict = true
 source = "vcs"
 
 [tool.hatch.version.build-hook.vcs]
-version-file = "src/genesys_memory/_version.py"
+version-file = "src/papez/_version.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["shim", "benchmarks", ".github", "docs"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/genesys_memory"]
+packages = ["src/papez"]
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]

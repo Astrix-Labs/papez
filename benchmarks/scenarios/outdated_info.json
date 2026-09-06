@@ -133,13 +133,13 @@
     {
       "question": "What information have you updated or superseded about this user?",
       "ground_truth": "Location: San Francisco -> Austin. Editor: VS Code -> Neovim. Language: Python 3.9 -> Rust (with Python kept for ML). Project management: Jira -> Linear. Team member: Diana transferred out. Alice promoted to team lead. Each of these represents superseded information where only the latest version is current.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "supersession_tracking"
     },
     {
       "question": "If I told you I'm using VS Code, would that contradict anything you know?",
       "ground_truth": "Yes — the user switched from VS Code to Neovim and has been very enthusiastic about it ('converted', 'game changer'). Claiming to use VS Code would contradict the most recent editor preference. The system should flag this as a potential contradiction with existing memory.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "contradiction_detection"
     }
   ]

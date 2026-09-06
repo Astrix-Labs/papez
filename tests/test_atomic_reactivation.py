@@ -10,10 +10,10 @@ from datetime import datetime, timezone, timedelta
 
 import pytest
 
-from genesys_memory.context import current_user_id
-from genesys_memory.models.enums import MemoryStatus
-from genesys_memory.models.node import MemoryNode
-from genesys_memory.storage.memory import InMemoryGraphProvider
+from papez.context import current_user_id
+from papez.models.enums import MemoryStatus
+from papez.models.node import MemoryNode
+from papez.storage.memory import InMemoryGraphProvider
 
 
 def _make_node(**kwargs) -> MemoryNode:

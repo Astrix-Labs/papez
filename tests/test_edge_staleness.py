@@ -7,11 +7,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from genesys_memory.mcp.tools import MCPToolHandler, _is_edge_stale
-from genesys_memory.models.edge import MemoryEdge
-from genesys_memory.models.enums import EdgeType
-from genesys_memory.models.node import MemoryNode
-from genesys_memory.storage.memory import InMemoryGraphProvider
+from papez.mcp.tools import MCPToolHandler, _is_edge_stale
+from papez.models.edge import MemoryEdge
+from papez.models.enums import EdgeType
+from papez.models.node import MemoryNode
+from papez.storage.memory import InMemoryGraphProvider
 
 
 def _make_node(**kwargs) -> MemoryNode:
@@ -84,7 +84,7 @@ class TestIsEdgeStale:
             type=EdgeType.RELATED_TO,
             last_validated_at=datetime.now(timezone.utc) - timedelta(days=10),
         )
-        with patch("genesys_memory.engine.config.EDGE_STALE_DAYS", 7):
+        with patch("papez.engine.config.EDGE_STALE_DAYS", 7):
             assert _is_edge_stale(edge) is True
 
 
@@ -147,7 +147,7 @@ class TestCoRetrievalValidation:
         graph.get_all_edges = AsyncMock(return_value=[edge])
         graph.validate_edge = AsyncMock()
 
-        with patch("genesys_memory.mcp.tools.current_org_ids") as mock_org:
+        with patch("papez.mcp.tools.current_org_ids") as mock_org:
             mock_org.get.return_value = []
             result = await handler.memory_recall("test query", k=5)
 
@@ -174,7 +174,7 @@ class TestCoRetrievalValidation:
         graph.get_edges = AsyncMock(return_value=[])
         graph.get_all_edges = AsyncMock(return_value=[edge])
 
-        with patch("genesys_memory.mcp.tools.current_org_ids") as mock_org:
+        with patch("papez.mcp.tools.current_org_ids") as mock_org:
             mock_org.get.return_value = []
             result = await handler.memory_recall("test query", k=5, read_only=True)
 
@@ -209,7 +209,7 @@ class TestCoRetrievalValidation:
         graph.get_all_edges = AsyncMock(return_value=[shared_edge, external_edge])
         graph.validate_edge = AsyncMock()
 
-        with patch("genesys_memory.mcp.tools.current_org_ids") as mock_org:
+        with patch("papez.mcp.tools.current_org_ids") as mock_org:
             mock_org.get.return_value = []
             await handler.memory_recall("test query", k=5)
 
@@ -263,7 +263,7 @@ class TestExplainShowsStaleness:
 class TestInMemoryValidateEdge:
     @pytest.mark.asyncio
     async def test_validate_edge_updates_timestamp(self):
-        from genesys_memory.context import current_user_id
+        from papez.context import current_user_id
         token = current_user_id.set("test-user")
         try:
             provider = InMemoryGraphProvider()
@@ -294,7 +294,7 @@ class TestInMemoryValidateEdge:
 
     @pytest.mark.asyncio
     async def test_validate_nonexistent_edge_noop(self):
-        from genesys_memory.context import current_user_id
+        from papez.context import current_user_id
         token = current_user_id.set("test-user")
         try:
             provider = InMemoryGraphProvider()
@@ -308,7 +308,7 @@ class TestEdgePersistence:
     async def test_new_fields_survive_serialization(self):
         """source_context and last_validated_at survive JSON round-trip via persist."""
         import tempfile
-        from genesys_memory.context import current_user_id
+        from papez.context import current_user_id
 
         token = current_user_id.set("test-user")
         try:

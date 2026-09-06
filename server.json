@@ -1,16 +1,16 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.Astrix-Labs/genesys-memory",
+  "name": "io.github.Astrix-Labs/papez",
   "description": "Causal graph memory engine for AI agents with scoring, activation, and forgetting",
   "repository": {
-    "url": "https://github.com/Astrix-Labs/genesys",
+    "url": "https://github.com/Astrix-Labs/papez",
     "source": "github"
   },
   "version": "0.5.2",
   "packages": [
     {
       "registryType": "pypi",
-      "identifier": "genesys-memory",
+      "identifier": "papez",
       "version": "0.5.2",
       "transport": {
         "type": "stdio"

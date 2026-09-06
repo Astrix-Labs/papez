@@ -6,13 +6,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.core_memory.promoter import (
+from papez.core_memory.promoter import (
     consolidation_score,
     evaluate_core_promotion,
     promote_to_core,
 )
-from genesys_memory.models.enums import MemoryStatus
-from genesys_memory.models.node import MemoryNode
+from papez.models.enums import MemoryStatus
+from papez.models.node import MemoryNode
 
 
 def _make_node(**kwargs) -> MemoryNode:

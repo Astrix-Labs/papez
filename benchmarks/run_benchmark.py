@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark runner: compares Genesys causal memory vs flat vector baseline.
+"""Benchmark runner: compares Papez causal memory vs flat vector baseline.
 
 Usage:
     python benchmarks/run_benchmark.py              # Full run (needs API keys)
@@ -26,13 +26,13 @@ load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 import anthropic  # noqa: E402
 
 from benchmarks.baseline_flat import FlatVectorMemory  # noqa: E402
-from genesys_memory.engine.scoring import cosine_similarity  # noqa: E402
-from genesys_memory.mcp.tools import MCPToolHandler  # noqa: E402
-from genesys_memory.models.edge import MemoryEdge  # noqa: E402
-from genesys_memory.models.enums import CAUSAL_EDGE_TYPES, EdgeType, MemoryStatus  # noqa: E402
-from genesys_memory.models.node import MemoryNode  # noqa: E402
-from genesys_memory.retrieval.embedding import OpenAIEmbeddingProvider  # noqa: E402
-from genesys_memory.storage.base import LLMProvider  # noqa: E402
+from papez.engine.scoring import cosine_similarity  # noqa: E402
+from papez.mcp.tools import MCPToolHandler  # noqa: E402
+from papez.models.edge import MemoryEdge  # noqa: E402
+from papez.models.enums import CAUSAL_EDGE_TYPES, EdgeType, MemoryStatus  # noqa: E402
+from papez.models.node import MemoryNode  # noqa: E402
+from papez.retrieval.embedding import OpenAIEmbeddingProvider  # noqa: E402
+from papez.storage.base import LLMProvider  # noqa: E402
 
 SCENARIOS_DIR = Path(__file__).parent / "scenarios"
 
@@ -218,9 +218,9 @@ class QuestionResult:
     question: str
     ground_truth: str
     category: str
-    genesys_answer: str = ""
+    papez_answer: str = ""
     baseline_answer: str = ""
-    genesys_scores: dict = field(default_factory=dict)
+    papez_scores: dict = field(default_factory=dict)
     baseline_scores: dict = field(default_factory=dict)
 
 
@@ -228,7 +228,7 @@ class QuestionResult:
 class BenchmarkResult:
     scenario_name: str
     question_results: list[QuestionResult] = field(default_factory=list)
-    genesys_avg: dict = field(default_factory=dict)
+    papez_avg: dict = field(default_factory=dict)
     baseline_avg: dict = field(default_factory=dict)
     improvement: dict = field(default_factory=dict)
 
@@ -302,16 +302,16 @@ def load_all_scenarios() -> list[BenchmarkScenario]:
 
 
 class BenchmarkRunner:
-    """Runs side-by-side comparison of Genesys vs flat vector baseline."""
+    """Runs side-by-side comparison of Papez vs flat vector baseline."""
 
     def __init__(
         self,
-        genesys: MCPToolHandler,
+        papez: MCPToolHandler,
         baseline: FlatVectorMemory,
         judge: LLMJudge,
         llm: "LLMProvider | None" = None,
     ):
-        self.genesys = genesys
+        self.papez = papez
         self.baseline = baseline
         self.judge = judge
         self.llm = llm
@@ -322,7 +322,7 @@ class BenchmarkRunner:
         if not self.llm:
             return
 
-        graph = self.genesys.graph
+        graph = self.papez.graph
         node = await graph.get_node(node_id)
         if not node:
             return
@@ -369,7 +369,7 @@ class BenchmarkRunner:
         try:
             node = await graph.get_node(node_id)
             if node:
-                from genesys_memory.core_memory.promoter import evaluate_core_promotion, promote_to_core
+                from papez.core_memory.promoter import evaluate_core_promotion, promote_to_core
                 should_promote, reason = await evaluate_core_promotion(node, graph)
                 if should_promote and reason:
                     await promote_to_core(node_id, reason, graph)
@@ -379,8 +379,8 @@ class BenchmarkRunner:
     async def _run_forgetting_sweep(self) -> int:
         """Run the forgetting engine to prune irrelevant orphan memories.
         Also sets decay_score to near-zero for orphan noise nodes."""
-        graph = self.genesys.graph
-        embeddings = self.genesys.embeddings
+        graph = self.papez.graph
+        embeddings = self.papez.embeddings
 
         # First, recalculate decay scores for all active nodes (without query context,
         # so relevance falls back to recency-based scoring)
@@ -389,7 +389,7 @@ class BenchmarkRunner:
 
         for node in list(graph.nodes.values()) if hasattr(graph, 'nodes') else []:
             try:
-                from genesys_memory.engine.scoring import calculate_decay_score
+                from papez.engine.scoring import calculate_decay_score
                 score = await calculate_decay_score(
                     node, None, None, graph, embeddings, max_cw
                 )
@@ -398,14 +398,14 @@ class BenchmarkRunner:
                 pass
 
         # Now run the actual forgetting sweep
-        from genesys_memory.engine.forgetting import sweep_for_forgetting
+        from papez.engine.forgetting import sweep_for_forgetting
         pruned = await sweep_for_forgetting(graph)
         return len(pruned)
 
     async def _recall_with_scoring(self, query: str, k: int = 10) -> list[dict]:
         """Recall with three-force scoring re-ranking instead of raw cosine similarity."""
-        graph = self.genesys.graph
-        embeddings = self.genesys.embeddings
+        graph = self.papez.graph
+        embeddings = self.papez.embeddings
 
         # Get query embedding and entities
         query_embedding = await embeddings.embed(query)
@@ -428,7 +428,7 @@ class BenchmarkRunner:
         scored_results = []
         for node, vec_sim in candidates:
             try:
-                from genesys_memory.engine.scoring import calculate_decay_score
+                from papez.engine.scoring import calculate_decay_score
                 score = await calculate_decay_score(
                     node, query_embedding, query_entities, graph, embeddings, max_cw
                 )
@@ -463,7 +463,7 @@ class BenchmarkRunner:
     async def ingest(self, scenario: BenchmarkScenario) -> None:
         """Ingest conversation history into both systems.
 
-        For Genesys: stores memories, creates temporal edges, runs full background
+        For Papez: stores memories, creates temporal edges, runs full background
         processing (entity extraction, category classification, LLM causal inference,
         core promotion). This builds the real causal graph structure.
         """
@@ -472,7 +472,7 @@ class BenchmarkRunner:
         for i, turn in enumerate(scenario.conversation_history):
             content = turn["content"]
             related = [prev_id] if prev_id else None
-            result = await self.genesys.memory_store(
+            result = await self.papez.memory_store(
                 content, source_session="benchmark", related_to=related
             )
             curr_id = result["node_id"]
@@ -488,10 +488,10 @@ class BenchmarkRunner:
 
     async def query_both(self, question: str, k: int = 10) -> tuple[str, str]:
         """Query both systems and return formatted answers."""
-        # Genesys: use three-force scoring re-ranking
-        genesys_memories = await self._recall_with_scoring(question, k=k)
-        genesys_answer = "\n".join(
-            f"- {m.get('content', m.get('summary', ''))}" for m in genesys_memories
+        # Papez: use three-force scoring re-ranking
+        papez_memories = await self._recall_with_scoring(question, k=k)
+        papez_answer = "\n".join(
+            f"- {m.get('content', m.get('summary', ''))}" for m in papez_memories
         )
 
         # Baseline: raw cosine similarity
@@ -500,7 +500,7 @@ class BenchmarkRunner:
             f"- {m['content']}" for m in baseline_results
         )
 
-        return genesys_answer or "(no results)", baseline_answer or "(no results)"
+        return papez_answer or "(no results)", baseline_answer or "(no results)"
 
     async def run_scenario(self, scenario: BenchmarkScenario) -> BenchmarkResult:
         """Run a complete benchmark scenario."""
@@ -510,7 +510,7 @@ class BenchmarkRunner:
         # Run forgetting sweep to prune irrelevant orphan memories
         print("  Phase 2: Running forgetting sweep...")
         pruned_count = await self._run_forgetting_sweep()
-        graph = self.genesys.graph
+        graph = self.papez.graph
         remaining = len(graph.nodes) if hasattr(graph, 'nodes') else 0
         print(f"  Pruned {pruned_count} memories, {remaining} remaining")
 
@@ -519,31 +519,31 @@ class BenchmarkRunner:
         result = BenchmarkResult(scenario_name=scenario.name)
 
         for q in scenario.questions:
-            genesys_ans, baseline_ans = await self.query_both(q["question"])
+            papez_ans, baseline_ans = await self.query_both(q["question"])
 
-            genesys_scores = self.judge.score(q["question"], q["ground_truth"], genesys_ans)
+            papez_scores = self.judge.score(q["question"], q["ground_truth"], papez_ans)
             baseline_scores = self.judge.score(q["question"], q["ground_truth"], baseline_ans)
 
             qr = QuestionResult(
                 question=q["question"],
                 ground_truth=q["ground_truth"],
                 category=q["category"],
-                genesys_answer=genesys_ans,
+                papez_answer=papez_ans,
                 baseline_answer=baseline_ans,
-                genesys_scores=genesys_scores,
+                papez_scores=papez_scores,
                 baseline_scores=baseline_scores,
             )
             result.question_results.append(qr)
 
         # Calculate averages
         for dim in JUDGE_DIMENSIONS:
-            g_scores = [qr.genesys_scores.get(dim, 0) for qr in result.question_results]
+            g_scores = [qr.papez_scores.get(dim, 0) for qr in result.question_results]
             b_scores = [qr.baseline_scores.get(dim, 0) for qr in result.question_results]
-            result.genesys_avg[dim] = sum(g_scores) / max(len(g_scores), 1)
+            result.papez_avg[dim] = sum(g_scores) / max(len(g_scores), 1)
             result.baseline_avg[dim] = sum(b_scores) / max(len(b_scores), 1)
             if result.baseline_avg[dim] > 0:
                 result.improvement[dim] = (
-                    (result.genesys_avg[dim] - result.baseline_avg[dim])
+                    (result.papez_avg[dim] - result.baseline_avg[dim])
                     / result.baseline_avg[dim]
                     * 100
                 )
@@ -563,15 +563,15 @@ class BenchmarkRunner:
             results.append(result)
             # Clear both systems between scenarios
             self.baseline.clear()
-            if hasattr(self.genesys.graph, 'clear'):
-                self.genesys.graph.clear()
+            if hasattr(self.papez.graph, 'clear'):
+                self.papez.graph.clear()
         return results
 
 
 def generate_report(results: list[BenchmarkResult]) -> str:
     """Generate a markdown report from benchmark results."""
     lines = [
-        "# Genesys Benchmark Results",
+        "# Papez Benchmark Results",
         "",
         f"*Generated: {datetime.now(timezone.utc).isoformat()}*",
         "",
@@ -583,12 +583,12 @@ def generate_report(results: list[BenchmarkResult]) -> str:
 
     for r in results:
         for dim in JUDGE_DIMENSIONS:
-            all_g[dim].append(r.genesys_avg.get(dim, 0))
+            all_g[dim].append(r.papez_avg.get(dim, 0))
             all_b[dim].append(r.baseline_avg.get(dim, 0))
 
     lines.append("## Overall Summary")
     lines.append("")
-    lines.append("| Dimension | Genesys | Baseline | Improvement |")
+    lines.append("| Dimension | Papez | Baseline | Improvement |")
     lines.append("|-----------|---------|----------|-------------|")
 
     for dim in JUDGE_DIMENSIONS:
@@ -603,10 +603,10 @@ def generate_report(results: list[BenchmarkResult]) -> str:
     for r in results:
         lines.append(f"## {r.scenario_name}")
         lines.append("")
-        lines.append("| Dimension | Genesys | Baseline | Improvement |")
+        lines.append("| Dimension | Papez | Baseline | Improvement |")
         lines.append("|-----------|---------|----------|-------------|")
         for dim in JUDGE_DIMENSIONS:
-            g = r.genesys_avg.get(dim, 0)
+            g = r.papez_avg.get(dim, 0)
             b = r.baseline_avg.get(dim, 0)
             imp = r.improvement.get(dim, 0)
             lines.append(f"| {dim} | {g:.2f} | {b:.2f} | {imp:+.1f}% |")
@@ -620,7 +620,7 @@ def generate_report(results: list[BenchmarkResult]) -> str:
             lines.append(f"### Q{i}: {qr.question}")
             lines.append(f"**Category**: {qr.category}")
             lines.append("")
-            lines.append(f"**Genesys scores**: {qr.genesys_scores}")
+            lines.append(f"**Papez scores**: {qr.papez_scores}")
             lines.append(f"**Baseline scores**: {qr.baseline_scores}")
             lines.append("")
         lines.append("</details>")
@@ -646,7 +646,7 @@ def dry_run() -> None:
 
 
 async def main() -> None:
-    parser = argparse.ArgumentParser(description="Genesys benchmark runner")
+    parser = argparse.ArgumentParser(description="Papez benchmark runner")
     parser.add_argument("--dry-run", action="store_true", help="Parse scenarios without running benchmarks")
     parser.add_argument("--scenario", type=str, help="Run a specific scenario by name")
     args = parser.parse_args()
@@ -665,16 +665,16 @@ async def main() -> None:
 
     # Setup providers
     from unittest.mock import AsyncMock
-    from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+    from papez.engine.llm_provider import AnthropicLLMProvider
 
     embeddings = OpenAIEmbeddingProvider(api_key=os.environ["OPENAI_API_KEY"])
     llm = AnthropicLLMProvider(api_key=os.environ["ANTHROPIC_API_KEY"])
 
-    # Genesys with in-memory graph (supports real vector search + causal edges)
+    # Papez with in-memory graph (supports real vector search + causal edges)
     graph = InMemoryGraphProvider()
     mock_cache = AsyncMock()
 
-    genesys = MCPToolHandler(
+    papez = MCPToolHandler(
         graph=graph,
         embeddings=embeddings,
         cache=mock_cache,
@@ -690,7 +690,7 @@ async def main() -> None:
             print(f"Error: scenario '{args.scenario}' not found", file=sys.stderr)
             sys.exit(1)
 
-    runner = BenchmarkRunner(genesys, baseline, judge, llm=llm)
+    runner = BenchmarkRunner(papez, baseline, judge, llm=llm)
     results = await runner.run_all(scenarios)
 
     # Generate and save report

@@ -1,12 +1,12 @@
-# Genesys Contributor License Agreement
+# Papez Contributor License Agreement
 
-Thank you for your interest in contributing to Genesys, owned and maintained by Astrix Labs ("Company"). This Contributor License Agreement ("Agreement") is a legal document that clarifies the intellectual property rights granted with contributions from any person or entity ("Contributor") to the Company for the Genesys project.
+Thank you for your interest in contributing to Papez, owned and maintained by Astrix Labs ("Company"). This Contributor License Agreement ("Agreement") is a legal document that clarifies the intellectual property rights granted with contributions from any person or entity ("Contributor") to the Company for the Papez project.
 
-By submitting a pull request or otherwise contributing to the Genesys project, you accept and agree to the following terms and conditions.
+By submitting a pull request or otherwise contributing to the Papez project, you accept and agree to the following terms and conditions.
 
 ## 1. Definitions
 
-**"Contribution"** means any original work of authorship, including any modifications or additions to an existing work, that is intentionally submitted by the Contributor to the Company for inclusion in the Genesys project. "Submitted" means any form of electronic, verbal, or written communication sent to the Company or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Company, but excluding communication that is conspicuously marked or otherwise designated in writing by the Contributor as "Not a Contribution."
+**"Contribution"** means any original work of authorship, including any modifications or additions to an existing work, that is intentionally submitted by the Contributor to the Company for inclusion in the Papez project. "Submitted" means any form of electronic, verbal, or written communication sent to the Company or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Company, but excluding communication that is conspicuously marked or otherwise designated in writing by the Contributor as "Not a Contribution."
 
 **"Copyright"** means all rights protecting works of authorship, including copyright, moral, and neighboring rights, as appropriate, for the full term of their existence.
 
@@ -20,7 +20,7 @@ Subject to the terms and conditions of this Agreement, the Contributor hereby gr
 
 ## 4. Right to Grant Licenses
 
-The Contributor represents that they are legally entitled to grant the above licenses. If the Contributor's employer(s) has rights to intellectual property that the Contributor creates, the Contributor represents that they have received permission to make Contributions on behalf of that employer, or that the employer has waived such rights for Contributions to the Genesys project.
+The Contributor represents that they are legally entitled to grant the above licenses. If the Contributor's employer(s) has rights to intellectual property that the Contributor creates, the Contributor represents that they have received permission to make Contributions on behalf of that employer, or that the employer has waived such rights for Contributions to the Papez project.
 
 ## 5. Original Work
 
@@ -32,7 +32,7 @@ The Contributor is not expected to provide support for Contributions, except to 
 
 ## 7. Relicensing Rights
 
-The Contributor acknowledges and agrees that the Company may, at its sole discretion, relicense the Genesys project (including the Contributor's Contributions) under different license terms, including but not limited to commercial or proprietary licenses. This right is necessary for the Company to offer dual-licensed commercial deployments of Genesys.
+The Contributor acknowledges and agrees that the Company may, at its sole discretion, relicense the Papez project (including the Contributor's Contributions) under different license terms, including but not limited to commercial or proprietary licenses. This right is necessary for the Company to offer dual-licensed commercial deployments of Papez.
 
 ## 8. Notification
 
@@ -42,7 +42,7 @@ The Contributor agrees to notify the Company of any facts or circumstances of wh
 
 ## How to Sign
 
-By opening a pull request against the Genesys repository, you acknowledge that you have read this Agreement and agree to its terms. Your git commit metadata (name and email address) serves as your electronic signature.
+By opening a pull request against the Papez repository, you acknowledge that you have read this Agreement and agree to its terms. Your git commit metadata (name and email address) serves as your electronic signature.
 
 If you are contributing on behalf of a company or organization, please have an authorized representative email cla@astrixlabs.ai with the subject "Corporate CLA — [Company Name]" to sign a corporate version of this agreement.
 

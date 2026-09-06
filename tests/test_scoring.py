@@ -7,14 +7,14 @@ from unittest.mock import AsyncMock
 import numpy as np
 import pytest
 
-from genesys_memory.engine.scoring import (
+from papez.engine.scoring import (
     base_level_activation,
     calculate_decay_score,
     calculate_reactivation_durability,
     cosine_similarity,
 )
-from genesys_memory.models.enums import ReactivationPattern
-from genesys_memory.models.node import MemoryNode
+from papez.models.enums import ReactivationPattern
+from papez.models.node import MemoryNode
 
 
 def _make_node(**kwargs) -> MemoryNode:

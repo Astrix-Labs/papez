@@ -5,8 +5,8 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-from genesys_memory.engine.scoring import cosine_similarity
-from genesys_memory.storage.base import EmbeddingProvider
+from papez.engine.scoring import cosine_similarity
+from papez.storage.base import EmbeddingProvider
 
 
 @dataclass
@@ -20,7 +20,7 @@ class FlatMemoryEntry:
 class FlatVectorMemory:
     """Simple in-memory vector store with cosine similarity retrieval.
 
-    Uses the same EmbeddingProvider as Genesys for fair comparison.
+    Uses the same EmbeddingProvider as Papez for fair comparison.
     No causal edges, no scoring, no status transitions — just vectors.
     """
 

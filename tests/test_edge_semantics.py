@@ -12,11 +12,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.core_memory.promoter import consolidation_score, evaluate_core_promotion
-from genesys_memory.models.edge import MemoryEdge
-from genesys_memory.models.enums import EdgeType, SUPPORTIVE_EDGE_TYPES, NEGATIVE_EDGE_TYPES
-from genesys_memory.models.node import MemoryNode
-from genesys_memory.storage.memory import InMemoryGraphProvider
+from papez.core_memory.promoter import consolidation_score, evaluate_core_promotion
+from papez.models.edge import MemoryEdge
+from papez.models.enums import EdgeType, SUPPORTIVE_EDGE_TYPES, NEGATIVE_EDGE_TYPES
+from papez.models.node import MemoryNode
+from papez.storage.memory import InMemoryGraphProvider
 
 
 def _make_node(**kwargs) -> MemoryNode:
@@ -39,7 +39,7 @@ def _make_edge(source_id: uuid.UUID, target_id: uuid.UUID, edge_type: EdgeType, 
 
 @pytest.fixture
 def graph():
-    from genesys_memory.context import current_user_id
+    from papez.context import current_user_id
     token = current_user_id.set("test-user")
     provider = InMemoryGraphProvider()
     provider._user_nodes["test-user"] = {}
@@ -257,7 +257,7 @@ class TestContradictionReasonCapture:
     @pytest.mark.asyncio
     async def test_detect_contradiction_returns_reason(self):
         """detect_contradiction should return (bool, float, str | None)."""
-        from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+        from papez.engine.llm_provider import AnthropicLLMProvider
 
         provider = AnthropicLLMProvider.__new__(AnthropicLLMProvider)
         provider._ask = AsyncMock(return_value='{"contradicts": true, "confidence": 0.9, "reason": "Memory A says X, Memory B says not-X"}')
@@ -272,7 +272,7 @@ class TestContradictionReasonCapture:
     @pytest.mark.asyncio
     async def test_detect_contradiction_missing_reason(self):
         """If LLM omits reason, should return None for reason."""
-        from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+        from papez.engine.llm_provider import AnthropicLLMProvider
 
         provider = AnthropicLLMProvider.__new__(AnthropicLLMProvider)
         provider._ask = AsyncMock(return_value='{"contradicts": false, "confidence": 0.2}')
@@ -285,7 +285,7 @@ class TestContradictionReasonCapture:
     @pytest.mark.asyncio
     async def test_detect_contradiction_json_error(self):
         """Malformed JSON should return safe defaults."""
-        from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+        from papez.engine.llm_provider import AnthropicLLMProvider
 
         provider = AnthropicLLMProvider.__new__(AnthropicLLMProvider)
         provider._ask = AsyncMock(return_value="not json")
@@ -297,7 +297,7 @@ class TestContradictionReasonCapture:
 class TestCausalInferenceReasonCapture:
     @pytest.mark.asyncio
     async def test_infer_causal_edges_returns_reason(self):
-        from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+        from papez.engine.llm_provider import AnthropicLLMProvider
 
         provider = AnthropicLLMProvider.__new__(AnthropicLLMProvider)
         provider._ask = AsyncMock(return_value='[{"target_id": "abc", "edge_type": "caused_by", "confidence": 0.8, "reason": "A led to B"}]')
@@ -312,7 +312,7 @@ class TestCausalInferenceReasonCapture:
 
     @pytest.mark.asyncio
     async def test_infer_causal_edges_missing_reason(self):
-        from genesys_memory.engine.llm_provider import AnthropicLLMProvider
+        from papez.engine.llm_provider import AnthropicLLMProvider
 
         provider = AnthropicLLMProvider.__new__(AnthropicLLMProvider)
         provider._ask = AsyncMock(return_value='[{"target_id": "abc", "edge_type": "supports", "confidence": 0.7}]')

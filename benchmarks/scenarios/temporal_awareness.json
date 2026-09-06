@@ -127,13 +127,13 @@
     {
       "question": "Trace the evidence chain for how Max's behavior with other dogs evolved over time.",
       "ground_truth": "Week 1: anxious around other dogs, vet recommended trainer. Week 2: started training with Sarah. Week 4: breakthrough - walked past another dog without lunging. Week 5: setback - bit another dog at park. Week 6: switched to private sessions. The trajectory shows improvement, then regression, then adaptation.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "evidence_tracing"
     },
     {
       "question": "What is the most important thing you know about this user's life right now and why?",
       "ground_truth": "The user adopted a rescue dog Max who has behavioral challenges with other dogs. This is the most structurally connected fact — it links to vet visits, training with Sarah, behavioral milestones, setbacks, and lifestyle changes. It's the hub node of the entire memory graph.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "structural_importance"
     }
   ]

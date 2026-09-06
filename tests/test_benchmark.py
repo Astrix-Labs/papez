@@ -208,15 +208,15 @@ class TestReportGeneration:
             question="Test question?",
             ground_truth="Test ground truth",
             category="test",
-            genesys_answer="genesys answer",
+            papez_answer="papez answer",
             baseline_answer="baseline answer",
-            genesys_scores={"factual": 4, "causal": 5, "completeness": 4, "temporal": 3, "outdated": 4},
+            papez_scores={"factual": 4, "causal": 5, "completeness": 4, "temporal": 3, "outdated": 4},
             baseline_scores={"factual": 3, "causal": 2, "completeness": 3, "temporal": 3, "outdated": 3},
         )
         result = BenchmarkResult(
             scenario_name=name,
             question_results=[qr],
-            genesys_avg={"factual": 4.0, "causal": 5.0, "completeness": 4.0, "temporal": 3.0, "outdated": 4.0},
+            papez_avg={"factual": 4.0, "causal": 5.0, "completeness": 4.0, "temporal": 3.0, "outdated": 4.0},
             baseline_avg={"factual": 3.0, "causal": 2.0, "completeness": 3.0, "temporal": 3.0, "outdated": 3.0},
             improvement={"factual": 33.3, "causal": 150.0, "completeness": 33.3, "temporal": 0.0, "outdated": 33.3},
         )
@@ -225,7 +225,7 @@ class TestReportGeneration:
     def test_report_is_markdown(self):
         result = self._make_result()
         report = generate_report([result])
-        assert report.startswith("# Genesys Benchmark Results")
+        assert report.startswith("# Papez Benchmark Results")
 
     def test_report_contains_scenario(self):
         result = self._make_result("my_scenario")
@@ -242,7 +242,7 @@ class TestReportGeneration:
         result = self._make_result()
         report = generate_report([result])
         assert "| Dimension |" in report
-        assert "| Genesys |" in report or "Genesys" in report
+        assert "| Papez |" in report or "Papez" in report
 
     def test_report_multiple_scenarios(self):
         results = [self._make_result("scenario_a"), self._make_result("scenario_b")]
@@ -252,4 +252,4 @@ class TestReportGeneration:
 
     def test_report_empty_results(self):
         report = generate_report([])
-        assert "# Genesys Benchmark Results" in report
+        assert "# Papez Benchmark Results" in report

@@ -1,0 +1,28 @@
+[project]
+name = "genesys-memory"
+version = "0.6.0"
+description = "genesys-memory has been renamed to papez. This package installs papez and keeps `import genesys_memory` working."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "AGPL-3.0-or-later"}
+dependencies = ["papez>=0.6.0"]
+classifiers = ["Development Status :: 7 - Inactive"]
+
+[project.optional-dependencies]
+openai = ["papez[openai]"]
+anthropic = ["papez[anthropic]"]
+local = ["papez[local]"]
+redis = ["papez[redis]"]
+
+[project.scripts]
+genesys-memory = "genesys_memory.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/Astrix-Labs/papez"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/genesys_memory"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

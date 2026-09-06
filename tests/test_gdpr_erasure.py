@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import pytest
 
-from genesys_memory.context import current_org_ids, current_user_id, current_user_role
-from genesys_memory.mcp.tools import MCPToolHandler
-from genesys_memory.models.edge import MemoryEdge
-from genesys_memory.models.enums import EdgeType, MemoryStatus, Visibility
-from genesys_memory.models.node import MemoryNode
-from genesys_memory.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
+from papez.context import current_org_ids, current_user_id, current_user_role
+from papez.mcp.tools import MCPToolHandler
+from papez.models.edge import MemoryEdge
+from papez.models.enums import EdgeType, MemoryStatus, Visibility
+from papez.models.node import MemoryNode
+from papez.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
 
 
 def _make_node(**kwargs) -> MemoryNode:

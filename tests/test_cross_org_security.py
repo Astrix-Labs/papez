@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import pytest
 
-from genesys_memory.context import current_org_ids, current_user_id
-from genesys_memory.mcp.tools import MCPToolHandler
-from genesys_memory.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
+from papez.context import current_org_ids, current_user_id
+from papez.mcp.tools import MCPToolHandler
+from papez.storage.memory import InMemoryCacheProvider, InMemoryGraphProvider
 
 
 class FakeEmbedder:

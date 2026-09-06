@@ -10,9 +10,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.context import current_org_ids, current_user_id
-from genesys_memory.mcp.tools import MCPToolHandler
-from genesys_memory.models.node import MemoryNode
+from papez.context import current_org_ids, current_user_id
+from papez.mcp.tools import MCPToolHandler
+from papez.models.node import MemoryNode
 
 
 def _make_node(**kwargs) -> MemoryNode:
@@ -51,7 +51,7 @@ class TestAutoLinkFailureIsLogged:
         graph.vector_search = AsyncMock(side_effect=RuntimeError("boom"))
         graph.is_orphan = AsyncMock(return_value=True)
 
-        with caplog.at_level(logging.WARNING, logger="genesys_memory.mcp.tools"):
+        with caplog.at_level(logging.WARNING, logger="papez.mcp.tools"):
             result = await handler.memory_store("test content")
 
         assert result["status"] == "stored"
@@ -61,9 +61,9 @@ class TestAutoLinkFailureIsLogged:
 class TestLoggerDoesNotDoubleConfigure:
     def test_configure_logging_idempotent(self):
         """Calling configure_logging twice must not add a second handler."""
-        from genesys_memory import configure_logging
+        from papez import configure_logging
 
-        pkg_logger = logging.getLogger("genesys_memory")
+        pkg_logger = logging.getLogger("papez")
         original_count = len(pkg_logger.handlers)
 
         configure_logging(logging.DEBUG)

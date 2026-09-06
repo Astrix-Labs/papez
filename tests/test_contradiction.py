@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.engine.contradiction import detect_contradictions
-from genesys_memory.models.enums import MemoryStatus
-from genesys_memory.models.node import MemoryNode
+from papez.engine.contradiction import detect_contradictions
+from papez.models.enums import MemoryStatus
+from papez.models.node import MemoryNode
 
 
 def _make_node(**kwargs) -> MemoryNode:

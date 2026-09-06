@@ -132,13 +132,13 @@
     {
       "question": "What is the most structurally important thing you know about this user and why is it important?",
       "ground_truth": "The user is a software engineer at TechCorp on the payments team. This is the most structurally important fact because it connects to everything else: the race condition fix, the Redis locks, the reliability initiative, the framework design, the CTO recognition. Removing this node would disconnect the entire professional narrative.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "structural_importance"
     },
     {
       "question": "What information have you updated or superseded about this user?",
       "ground_truth": "The double-charge rate was superseded: originally 0.1% of transactions, then dropped to 0% after the Redis lock fix. The user's role evolved from individual contributor to reliability initiative lead. These are examples of information that should be tracked as superseded, not simply stored as separate facts.",
-      "category": "genesys_advantage",
+      "category": "papez_advantage",
       "requires": "supersession_tracking"
     }
   ]

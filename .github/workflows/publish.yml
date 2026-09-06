@@ -4,6 +4,9 @@ on:
     tags:
       - "v*"
 
+# Trusted publishing (OIDC): no tokens. PyPI must list this repository and this
+# workflow file as the publisher for BOTH projects: `papez` (the package) and
+# `genesys-memory` (the compatibility shim in shim/genesys-memory).
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -19,3 +22,21 @@ jobs:
       - run: pip install build
       - run: python -m build
       - uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-shim:
+    # The final genesys-memory release: depends on papez, aliases the old imports.
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build
+      - run: python -m build
+        working-directory: shim/genesys-memory
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: shim/genesys-memory/dist

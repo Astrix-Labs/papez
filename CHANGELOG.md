@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 (unreleased)
+
+### Renamed: genesys-memory is now papez
+
+- PyPI package `genesys-memory` -> `papez`; module `genesys_memory` -> `papez`; console script `genesys-memory` -> `papez`.
+- The MCP server announces itself as `papez`. Update client configs: `claude mcp add papez -- python -m papez`.
+- A final `genesys-memory` 0.6.0 release depends on `papez` and aliases every `genesys_memory.*` import to the same `papez.*` module, with a `DeprecationWarning`.
+- Environment variables keep the `GENESYS_` prefix. Nothing about the data format changed.
+
 ## [0.4.2] - 2026-07-17
 
 ### Fixed

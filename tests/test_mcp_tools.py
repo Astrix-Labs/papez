@@ -5,10 +5,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from genesys_memory.context import current_user_id
-from genesys_memory.mcp.tools import MCPToolHandler
-from genesys_memory.models.enums import MemoryStatus, ReactivationPattern
-from genesys_memory.models.node import MemoryNode
+from papez.context import current_user_id
+from papez.mcp.tools import MCPToolHandler
+from papez.models.enums import MemoryStatus, ReactivationPattern
+from papez.models.node import MemoryNode
 
 
 @pytest.fixture(autouse=True)
@@ -40,7 +40,7 @@ class TestAllToolsRegistered:
     async def test_all_tools_registered(self):
         """Server should list 13 tools (11 original + promote_to_org + memory_amend)."""
         # Import and check tool listing
-        from genesys_memory.server import list_tools
+        from papez.server import list_tools
         tool_list = await list_tools()
         assert len(tool_list) == 13
         names = {t.name for t in tool_list}
@@ -233,8 +233,8 @@ class TestSetCorePreferences:
 
 import importlib
 
-from genesys_memory.storage.cache import NullCacheProvider
-from genesys_memory.storage.memory import InMemoryGraphProvider
+from papez.storage.cache import NullCacheProvider
+from papez.storage.memory import InMemoryGraphProvider
 
 
 class _StubEmbedder:
@@ -306,7 +306,7 @@ class TestScoreLegibilityF1:
     @pytest.mark.asyncio
     async def test_recall_hit_has_activation_alias_equal_to_decay_score(self):
         h = await _real_handler()
-        await h.memory_store("Genesys stores causal memories")
+        await h.memory_store("Papez stores causal memories")
         rec = await h.memory_recall("causal memories")
         assert rec["results"], "expected a keyword hit"
         for hit in rec["results"]:
@@ -317,7 +317,7 @@ class TestAutolinkF2F6:
     @pytest.mark.asyncio
     async def test_autolink_respects_env_override(self, monkeypatch):
         monkeypatch.setenv("GENESYS_AUTOLINK_MIN_SIMILARITY", "1.01")
-        from genesys_memory.engine import config
+        from papez.engine import config
         importlib.reload(config)
         try:
             h = await _real_handler(_StubEmbedder())
@@ -340,7 +340,7 @@ class TestAutolinkF2F6:
 
     @pytest.mark.asyncio
     async def test_autolink_capped_at_max_edges(self):
-        from genesys_memory.engine import config
+        from papez.engine import config
         h = await _real_handler(_StubEmbedder())
         for _ in range(6):
             await h.memory_store("cap test content")
@@ -469,15 +469,15 @@ class TestWriteSideF4:
 
 class TestHeuristicConflictSignal:
     def test_numeric(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("it costs 50", "it costs 75") == "numeric_mismatch"
 
     def test_negation(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("the deal is on", "the deal is not on") == "negation"
 
     def test_none(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("blue sky", "green grass") is None
 
 
@@ -495,7 +495,7 @@ class TestCategoryF5:
 
 class TestConciseRecallF7:
     def test_truncate_summary_word_boundary(self):
-        from genesys_memory.mcp.tools import _truncate_summary
+        from papez.mcp.tools import _truncate_summary
         content = "word " * 60  # 300 chars
         s = _truncate_summary(content, 200)
         assert len(s) <= 200 and s.endswith("…")
@@ -566,7 +566,7 @@ class TestTraverseProviderCompatF3:
 class TestAutolinkNodeDegreeCapF2:
     @pytest.mark.asyncio
     async def test_incoming_autolink_accumulation_is_bounded(self, monkeypatch):
-        from genesys_memory.engine import config
+        from papez.engine import config
         monkeypatch.setattr(config, "AUTOLINK_MAX_NODE_DEGREE", 2)
         h = await _real_handler(_ConstEmbedder())
         first = await h.memory_store("hub content 0")
@@ -628,16 +628,16 @@ class TestConflictScanDecoupledF4:
 
 class TestNumericMismatchContext:
     def test_unrelated_numbers_do_not_fire(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         # A date in one text and an ID in the other share no numeric context.
         assert heuristic_conflict_signal("meeting on 2026", "invoice 12345") is None
 
     def test_same_context_differing_numbers_fire(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("costs 50 in 2026", "costs 75 in 2026") == "numeric_mismatch"
 
     def test_identical_numbers_do_not_fire(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("costs 50", "it costs 50") is None
 
 
@@ -689,7 +689,7 @@ class TestServerCallToolErrorsF9:
     @pytest.mark.asyncio
     async def test_missing_required_argument_is_structured(self):
         import json
-        from genesys_memory.server import call_tool
+        from papez.server import call_tool
         res = await call_tool("memory_explain", {})
         payload = json.loads(res[0].text)
         assert "missing required argument" in payload["error"]
@@ -698,7 +698,7 @@ class TestServerCallToolErrorsF9:
     @pytest.mark.asyncio
     async def test_unknown_tool_is_structured(self):
         import json
-        from genesys_memory.server import call_tool
+        from papez.server import call_tool
         res = await call_tool("not_a_tool", {})
         payload = json.loads(res[0].text)
         assert "error" in payload and payload["retryable"] is False
@@ -706,7 +706,7 @@ class TestServerCallToolErrorsF9:
     @pytest.mark.asyncio
     async def test_tool_exception_returns_error_payload_with_retryable_flag(self, monkeypatch):
         import json
-        import genesys_memory.server as srv
+        import papez.server as srv
 
         async def boom(**kwargs):
             raise RuntimeError("boom")
@@ -751,7 +751,7 @@ class TestRetestRound2Fixes:
     direction/visibility, and the latent recall superseder down-ranking."""
 
     def test_conflict_ignores_cross_quantity_numbers(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         # 200ms latency vs $50,000 budget: different quantities, no conflict.
         assert heuristic_conflict_signal(
             "API latency is 200ms after the caching fix",
@@ -759,11 +759,11 @@ class TestRetestRound2Fixes:
         ) is None
 
     def test_conflict_ignores_different_units_same_anchor(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("the migration took 6 weeks", "the migration took 8 months") is None
 
     def test_conflict_fires_same_anchor_same_unit(self):
-        from genesys_memory.engine.contradiction import heuristic_conflict_signal
+        from papez.engine.contradiction import heuristic_conflict_signal
         assert heuristic_conflict_signal("the budget is $50,000", "the budget is $80,000") == "numeric_mismatch"
 
     async def test_explain_edge_direction_disambiguates_supersedes(self):
@@ -873,7 +873,7 @@ class TestRecallZeroResultsFloorI3:
 
     @pytest.mark.asyncio
     async def test_starved_recall_backfills_to_floor_flagged_low_confidence(self):
-        from genesys_memory.engine import config
+        from papez.engine import config
 
         h = await _real_handler(_FloorEmbedder())
         await self._seed(h)

@@ -7,4 +7,4 @@ COPY src/ src/
 
 RUN pip install --no-cache-dir .
 
-ENTRYPOINT ["python", "-m", "genesys_memory"]
+ENTRYPOINT ["python", "-m", "papez"]
