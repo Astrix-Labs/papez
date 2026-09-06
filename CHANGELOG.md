@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.6.0 (unreleased)
+## 0.6.1
+
+- Pin `mcp>=1.0,<2`. The MCP SDK 2.x removed the low-level `Server.list_tools()` / `call_tool()` decorators, so `papez` 0.6.0 failed at import on a fresh install that resolved to mcp 2.1. Support for the 2.x API is tracked separately.
+- Clear error when `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` is set but the matching extra is not installed.
+
+## 0.6.0
 
 ### Renamed: genesys-memory is now papez
 

@@ -5,6 +5,7 @@ For production backends (Postgres, FalkorDB, etc.), use genesys-server.
 """
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -57,7 +58,10 @@ def _make_embedder() -> EmbeddingProvider | None:
             from papez.retrieval.embedding import OpenAIEmbeddingProvider
             return OpenAIEmbeddingProvider(api_key=api_key)
         except ImportError:
-            pass
+            logging.getLogger("papez").warning(
+                "OPENAI_API_KEY is set but the `openai` package is not installed; "
+                "falling back to the local embedder if available. Install it with: pip install 'papez[openai]'"
+            )
 
     try:
         from papez.retrieval.embedding import LocalEmbeddingProvider
@@ -82,8 +86,14 @@ def get_providers() -> Providers:
     llm_provider = None
     anthropic_key = os.getenv("ANTHROPIC_API_KEY", "")
     if anthropic_key:
-        from papez.engine.llm_provider import AnthropicLLMProvider
-        llm_provider = AnthropicLLMProvider(api_key=anthropic_key)
+        try:
+            from papez.engine.llm_provider import AnthropicLLMProvider
+            llm_provider = AnthropicLLMProvider(api_key=anthropic_key)
+        except ImportError:
+            logging.getLogger("papez").warning(
+                "ANTHROPIC_API_KEY is set but the `anthropic` package is not installed; "
+                "LLM enrichment is off. Install it with: pip install 'papez[anthropic]'"
+            )
 
     event_bus = InMemoryEventBusProvider()
 

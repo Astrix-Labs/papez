@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.7.0",
     "numpy>=1.26.0",
-    "mcp>=1.0.0",
+    "mcp>=1.0.0,<2",  # 2.x removed Server.list_tools/call_tool decorators; 2.x support is tracked separately
     "python-dotenv>=1.0.0",
 ]
 
