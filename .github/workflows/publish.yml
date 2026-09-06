@@ -40,3 +40,6 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: shim/genesys-memory/dist
+          # The shim's version is fixed; later papez tags must not fail because
+          # genesys-memory 0.6.0 is already on PyPI.
+          skip-existing: true
