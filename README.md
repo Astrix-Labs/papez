@@ -1,4 +1,11 @@
 <!-- mcp-name: io.github.Astrix-Labs/papez -->
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Astrix-Labs/papez/main/docs/assets/papez-wordmark-dark.svg">
+    <img alt="Papez: your personal memory for AI" width="360" src="https://raw.githubusercontent.com/Astrix-Labs/papez/main/docs/assets/papez-wordmark-light.svg">
+  </picture>
+</p>
+
 [![PyPI](https://img.shields.io/pypi/v/papez)](https://pypi.org/project/papez/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/papez)](https://pypi.org/project/papez/)
 [![CI](https://github.com/Astrix-Labs/papez/actions/workflows/ci.yml/badge.svg)](https://github.com/Astrix-Labs/papez/actions/workflows/ci.yml)
@@ -21,7 +28,6 @@
 Self-reported vendor figures above ~90 use different answerers/judges and are not comparable — the oracle retrieval ceiling under this frozen protocol is 94.9. Reproduce it yourself: [Astrix-Labs/locomo-harness](https://github.com/Astrix-Labs/locomo-harness) · [full methodology](https://papez.ai/developers/methodology) · [per-run results](https://papez.ai/benchmarks/locomo).
 
 **Hosted product:** [papez.ai](https://papez.ai) — your personal memory for AI, carried across ChatGPT, Claude, and every MCP app · [Pricing](https://papez.ai/pricing) · [Developer docs](https://papez.ai/developers) · [Benchmark methodology](https://papez.ai/developers/methodology) (85.55 on LoCoMo, certified over 10 runs, receipts published)
-<img width="1512" height="827" alt="image" src="https://github.com/user-attachments/assets/d152aa07-a852-4b8e-9f98-942d0bebd497" />
 
 ## What is this
 

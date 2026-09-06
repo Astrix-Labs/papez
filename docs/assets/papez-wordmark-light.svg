@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="120" viewBox="0 0 420 120" role="img" aria-label="Papez, your personal memory for AI">
+  <g transform="translate(26 31)">
+    <g transform="translate(43 1.5) rotate(6 20 28)"><path d="M0.3 8.6 C 8 7.7 24 7.7 39.7 8.5 C 40 12.5 40 16.5 40 21.7 c 4.6 -1.9 8 1.1 7.9 4.5 c -0.1 3.4 -3.6 6.1 -8 4.2 C 39.9 35.5 39.9 41.5 39.6 47.4 C 32 48.3 16 48.2 0.4 47.4 C 0.2 42 0.2 36.5 0.2 30.3 c 4.5 1.8 7.9 -1 7.9 -4.4 c 0 -3.4 -3.4 -6.2 -7.9 -4.3 C 0.2 16.5 0.2 12.5 0.3 8.6 Z" fill="#5C6B52"/></g>
+    <g transform="rotate(-7 20 28)"><path d="M0.3 8.6 C 8 7.7 24 7.7 39.7 8.5 C 40 12.5 40 16.5 40 21.7 c 4.6 -1.9 8 1.1 7.9 4.5 c -0.1 3.4 -3.6 6.1 -8 4.2 C 39.9 35.5 39.9 41.5 39.6 47.4 C 32 48.3 16 48.2 0.4 47.4 C 0.2 42 0.2 36.5 0.2 30.3 c 4.5 1.8 7.9 -1 7.9 -4.4 c 0 -3.4 -3.4 -6.2 -7.9 -4.3 C 0.2 16.5 0.2 12.5 0.3 8.6 Z" fill="#FBF8F3" stroke="#2A2724" stroke-width="2.2" stroke-linejoin="round"/></g>
+  </g>
+  <text x="148" y="76" font-family="'Cormorant Garamond', Garamond, Georgia, 'Times New Roman', serif" font-size="60" font-weight="500" fill="#2A2724">Papez</text>
+  <text x="151" y="101" font-family="'Work Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="14" letter-spacing="0.4" fill="#63605A">your personal memory for AI</text>
+</svg>
