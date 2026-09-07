@@ -10,6 +10,7 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
+from datetime import datetime, timedelta, timezone
 
 from papez.context import current_org_ids, current_user_id
 from papez.engine.forgetting import sweep_for_forgetting
@@ -335,7 +336,8 @@ class TestOrgNodeForgetting:
     @pytest.mark.asyncio
     async def test_private_orphan_still_pruned(self, setup_two_users):
         graph = setup_two_users
-        private_node = _make_node(
+        _idle = datetime.now(timezone.utc) - timedelta(days=60)  # forgetting also requires idleness
+        private_node = _make_node(created_at=_idle, last_accessed_at=_idle, 
             content_summary="private orphan",
             decay_score=0.0,
         )
