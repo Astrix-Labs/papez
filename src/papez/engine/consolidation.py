@@ -1,7 +1,7 @@
 """Episodic → semantic consolidation."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from papez.models.edge import MemoryEdge
 from papez.models.enums import EdgeType, MemoryStatus
@@ -37,7 +37,7 @@ async def check_and_consolidate(
     # Generate embedding
     embedding = await embeddings.embed(consolidated_text)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     semantic_node = MemoryNode(
         status=MemoryStatus.SEMANTIC,
         content_summary=summary,

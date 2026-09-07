@@ -387,7 +387,7 @@ class TestMCPServerDispatch:
         from papez.server import list_tools
         tool_list = await list_tools()
         store_tool = next(t for t in tool_list if t.name == "memory_store")
-        props = store_tool.inputSchema["properties"]
+        props = store_tool.model_dump(by_alias=True)["inputSchema"]["properties"]
         assert "visibility" in props
         assert "org_id" in props
 
@@ -397,9 +397,10 @@ class TestMCPServerDispatch:
         from papez.server import list_tools
         tool_list = await list_tools()
         promote_tool = next(t for t in tool_list if t.name == "promote_to_org")
-        assert "node_id" in promote_tool.inputSchema["required"]
-        assert "org_id" in promote_tool.inputSchema["required"]
-        props = promote_tool.inputSchema["properties"]
+        schema = promote_tool.model_dump(by_alias=True)["inputSchema"]  # camelCase attr on mcp 1.x, snake_case on 2.x
+        assert "node_id" in schema["required"]
+        assert "org_id" in schema["required"]
+        props = schema["properties"]
         assert "action" in props
         assert "dry_run" in props
 

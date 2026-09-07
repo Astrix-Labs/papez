@@ -4,13 +4,13 @@ import logging
 import uuid
 from collections.abc import Callable
 from contextlib import AbstractContextManager, nullcontext
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
+from papez.context import current_org_ids, current_user_id, current_user_role
 from papez.core_memory.preferences import CoreMemoryPreferences
 from papez.core_memory.promoter import evaluate_core_promotion
 from papez.models.edge import MemoryEdge
-from papez.context import current_org_ids, current_user_id, current_user_role
 from papez.models.enums import EdgeType, MemoryStatus, Visibility
 from papez.models.node import MemoryNode
 from papez.storage.base import CacheProvider, EmbeddingProvider, EventBusProvider, GraphStorageProvider
@@ -45,7 +45,7 @@ def _is_edge_stale(edge: MemoryEdge) -> bool:
     from papez.engine import config
     if not edge.last_validated_at:
         return False
-    days = (datetime.now(timezone.utc) - edge.last_validated_at).days
+    days = (datetime.now(UTC) - edge.last_validated_at).days
     return days > config.EDGE_STALE_DAYS
 
 
@@ -77,7 +77,7 @@ def _parse_iso_utc(value: str) -> datetime:
     """
     dt = datetime.fromisoformat(value)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 
@@ -114,8 +114,7 @@ def _live_connectivity_factor(causal_weight: int, max_causal_weight: int, is_orp
         cf = 0.0
     if is_orphan:
         return 0.0
-    if cf < config.MIN_CONNECTIVITY:
-        cf = config.MIN_CONNECTIVITY
+    cf = max(cf, config.MIN_CONNECTIVITY)
     return cf
 
 
@@ -210,7 +209,7 @@ class MCPToolHandler:
         embedding = await self.embeddings.embed(content) if self.embeddings else []
         summary = _truncate_summary(content)
 
-        ts = _parse_iso_utc(created_at) if created_at else datetime.now(timezone.utc)
+        ts = _parse_iso_utc(created_at) if created_at else datetime.now(UTC)
         node = MemoryNode(
             status=MemoryStatus.ACTIVE,
             content_summary=summary,
@@ -308,9 +307,10 @@ class MCPToolHandler:
                         if score < min_sim and score < conflict_min_sim:
                             continue
                         # Org boundary rule: org nodes only link to same-org nodes
-                        if vis == Visibility.ORG:
-                            if other_node.visibility != Visibility.ORG or other_node.org_id != org_id:
-                                continue
+                        if vis == Visibility.ORG and (
+                            other_node.visibility != Visibility.ORG or other_node.org_id != org_id
+                        ):
+                            continue
                         # Heuristic conflict hint — never creates structure.
                         if score >= conflict_min_sim:
                             signal = heuristic_conflict_signal(
@@ -786,7 +786,7 @@ class MCPToolHandler:
         # Update reactivation state + validate co-retrieval edges (skip in read_only mode)
         if not read_only:
             with self._defer_saves():
-                now = datetime.now(timezone.utc)
+                now = datetime.now(UTC)
                 reactivation_coros = []
                 reactivation_mems = []
                 for mem in memories:

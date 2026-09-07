@@ -11,6 +11,19 @@
 - `pytest tests/` passes on a base dev install: the benchmark test skips when `anthropic` is absent instead of failing collection, and CI no longer excludes it.
 - README states the Python 3.11 floor at the top of Quick Start.
 
+### MCP SDK 2.x support
+
+- The stdio server runs on both mcp 1.x and 2.x. The dependency is `mcp>=1.0.0` again; the `<2` pin from 0.6.1 is gone. `papez.server` feature-detects the SDK at import: it uses the `list_tools`/`call_tool` decorators when `Server` has them (1.x) and `Server.add_request_handler("tools/list" | "tools/call", ...)` otherwise (2.x). No version strings are parsed.
+- Behaviour is the same on either SDK: 13 tools with unchanged schemas, the same `{"error": ..., "retryable": ...}` payloads, and `serverInfo.name` of `papez`. The 2.x path replicates what the 1.x decorator did around the handler (argument validation against `inputSchema` returning `Input validation error: ...`, exceptions turned into `isError` results) so clients see identical responses.
+- `serverInfo` now carries the installed papez version and `websiteUrl` (`https://github.com/Astrix-Labs/papez`) on SDKs whose `Server` accepts them. On 1.x the version previously defaulted to the mcp package's own version. `SERVER_ICONS` in `papez.server` is the hook for icons; it is empty until a hosted icon asset exists.
+- Tool definitions live in `papez.server._TOOL_DEFS` as wire-shaped dicts; `Tool` models are built with `model_validate`, which is the only construction path that works on both SDKs (1.x fields are camelCase, 2.x fields are snake_case with camelCase aliases).
+- New `tests/test_server_compat.py` invokes the registered handlers through whichever SDK is installed and drives a real `python -m papez` subprocess over stdio (initialize, `tools/list`, `tools/call`, validation and unknown-tool paths). CI runs the suite against both `mcp<2` and `mcp>=2`.
+
+### Lint
+
+- `ruff` dev pin is `ruff>=0.14` again; the tree is clean under ruff 0.16's default rule set (`datetime.UTC`, `logging.exception`, `re.IGNORECASE`, PEP 604 annotations, flattened conditionals, sorted `__all__`, a duplicate stopword removed from the contradiction anchor set).
+- `papez.context.current_org_ids` no longer has a shared mutable `[]` default (a cross-request leak hazard flagged by B039). Every reader in the tree already calls `current_org_ids.get([])`; code that called bare `.get()` without setting the var first would now raise `LookupError`.
+
 ## 0.6.1
 
 - Pin `mcp>=1.0,<2`. The MCP SDK 2.x removed the low-level `Server.list_tools()` / `call_tool()` decorators, so `papez` 0.6.0 failed at import on a fresh install that resolved to mcp 2.1. Support for the 2.x API is tracked separately.

@@ -19,7 +19,7 @@ _ANCHOR_STOPWORDS = frozenset({
     "is", "are", "was", "were", "be", "been", "being", "the", "a", "an",
     "of", "to", "at", "in", "on", "for", "about", "around", "than", "over",
     "under", "by", "with", "as", "and", "or", "now", "currently", "it",
-    "its", "roughly", "approximately", "only", "just", "than",
+    "its", "roughly", "approximately", "only", "just",
 })
 
 # Unit tokens that may follow a number ("6 weeks", "200 ms"). A number's

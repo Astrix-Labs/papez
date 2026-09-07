@@ -130,7 +130,7 @@ def register_handlers(
         try:
             await on_memory_created(payload, graph, llm, embeddings)
         except Exception:
-            logger.error("Background handler failed", exc_info=True)
+            logger.exception("Background handler failed")
 
     if hasattr(event_bus, "_subscribers"):
         event_bus._subscribers["memory.created"].append(_handle_created)

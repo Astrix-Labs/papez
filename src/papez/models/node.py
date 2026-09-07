@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, Field
 
@@ -17,9 +17,9 @@ class MemoryNode(BaseModel):
     embedding: list[float] | None = None
 
     # Timestamps
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    last_accessed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    last_reactivated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    last_accessed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    last_reactivated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     # Lifecycle scores
     decay_score: float = 1.0

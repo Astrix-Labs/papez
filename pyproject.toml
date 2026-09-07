@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.7.0",
     "numpy>=1.26.0",
-    "mcp>=1.0.0,<2",  # 2.x removed Server.list_tools/call_tool decorators; 2.x support is tracked separately
+    "mcp>=1.0.0",
     "python-dotenv>=1.0.0",
 ]
 
@@ -39,7 +39,7 @@ dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pytest-cov>=5.0.0",
-    "ruff>=0.14,<0.16",  # CI tracks this range; 0.16 enabled rules the tree does not satisfy yet,
+    "ruff>=0.14",
     "mypy>=1.10.0",
 ]
 

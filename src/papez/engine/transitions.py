@@ -1,7 +1,7 @@
 """Status transition engine."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from papez.engine import config
@@ -37,7 +37,7 @@ async def evaluate_transitions(
             })
         else:
             # Auto-expire tagged memories after 24h with no connections
-            age_hours = (datetime.now(timezone.utc) - node.created_at).total_seconds() / 3600
+            age_hours = (datetime.now(UTC) - node.created_at).total_seconds() / 3600
             if age_hours > config.TAGGED_EXPIRE_HOURS:
                 await graph.update_node(str(node.id), {"status": MemoryStatus.DORMANT})
                 transitions.append({
@@ -80,7 +80,7 @@ async def evaluate_transitions(
 
         # Episodic/Semantic → Dormant
         elif node.status in (MemoryStatus.EPISODIC, MemoryStatus.SEMANTIC) and score < config.DORMANCY_THRESHOLD:
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             days_since = (now - node.last_reactivated_at).days
             if days_since > config.DORMANCY_DAYS and node.reactivation_count < config.DORMANCY_MAX_REACTIVATIONS:
                 await graph.update_node(str(node.id), {"status": MemoryStatus.DORMANT})

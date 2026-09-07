@@ -1,7 +1,7 @@
 """Active forgetting: prune memories meeting ALL conjunctive criteria."""
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from papez.engine import config
 from papez.models.enums import MemoryStatus, Visibility
@@ -13,12 +13,12 @@ def _last_use(node: MemoryNode) -> datetime:
     """The most recent moment the memory was touched: stored, recalled, or reactivated."""
     candidates = [node.created_at, node.last_accessed_at, *node.reactivation_timestamps]
     latest = max(c for c in candidates if c is not None)
-    return latest if latest.tzinfo else latest.replace(tzinfo=timezone.utc)
+    return latest if latest.tzinfo else latest.replace(tzinfo=UTC)
 
 
 def is_idle(node: MemoryNode, now: datetime | None = None) -> bool:
     """True once the memory has gone FORGETTING_MIN_IDLE_DAYS without any use."""
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     return now - _last_use(node) >= timedelta(days=config.FORGETTING_MIN_IDLE_DAYS)
 
 
@@ -40,7 +40,7 @@ async def sweep_for_forgetting(graph: GraphStorageProvider) -> list[str]:
     Returns list of pruned node IDs.
     """
     pruned: list[str] = []
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     orphans = await graph.get_orphans()
 
     for node in orphans:

@@ -25,7 +25,6 @@ from __future__ import annotations
 import calendar
 import re
 from datetime import date, datetime, timedelta
-from typing import Optional, Tuple
 
 _MONTHS = {
     "january": 1, "jan": 1, "february": 2, "feb": 2, "march": 3, "mar": 3,
@@ -38,20 +37,20 @@ _MONTH_ALT = "|".join(sorted(_MONTHS, key=len, reverse=True))
 _ISO_DATE_RE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
 
 # "August 15, 2023" / "August 15 2023" / "15 August 2023" / "1 May, 2022"
-_MDY_RE = re.compile(rf"\b({_MONTH_ALT})\s+(\d{{1,2}})(?:st|nd|rd|th)?,?\s+(\d{{4}})\b", re.I)
-_DMY_RE = re.compile(rf"\b(\d{{1,2}})(?:st|nd|rd|th)?\s+({_MONTH_ALT}),?\s+(\d{{4}})\b", re.I)
+_MDY_RE = re.compile(rf"\b({_MONTH_ALT})\s+(\d{{1,2}})(?:st|nd|rd|th)?,?\s+(\d{{4}})\b", re.IGNORECASE)
+_DMY_RE = re.compile(rf"\b(\d{{1,2}})(?:st|nd|rd|th)?\s+({_MONTH_ALT}),?\s+(\d{{4}})\b", re.IGNORECASE)
 # "October 2023" / "in September 2023" (no day)
-_MY_RE = re.compile(rf"\b({_MONTH_ALT})\s+(\d{{4}})\b", re.I)
+_MY_RE = re.compile(rf"\b({_MONTH_ALT})\s+(\d{{4}})\b", re.IGNORECASE)
 # "between <date> and <date>"
-_BETWEEN_RE = re.compile(r"\bbetween\b(.+?)\band\b(.+)", re.I)
+_BETWEEN_RE = re.compile(r"\bbetween\b(.+?)\band\b(.+)", re.IGNORECASE)
 
 
-def _month_bounds(year: int, month: int) -> Tuple[date, date]:
+def _month_bounds(year: int, month: int) -> tuple[date, date]:
     last = calendar.monthrange(year, month)[1]
     return date(year, month, 1), date(year, month, last)
 
 
-def _single_date(text: str) -> Optional[date]:
+def _single_date(text: str) -> date | None:
     """Parse the first explicit calendar date in ``text`` (needs a year)."""
     m = _MDY_RE.search(text)
     if m:
@@ -67,14 +66,14 @@ def _single_date(text: str) -> Optional[date]:
     return None
 
 
-def _safe_date(y: int, mo: int, d: int) -> Optional[date]:
+def _safe_date(y: int, mo: int, d: int) -> date | None:
     try:
         return date(y, mo, d)
     except ValueError:
         return None
 
 
-def parse_query_date_anchor(query: str) -> Optional[Tuple[date, date]]:
+def parse_query_date_anchor(query: str) -> tuple[date, date] | None:
     """Return an inclusive ``(start, end)`` window for a date-scoped query, else None."""
     if not query:
         return None
@@ -172,7 +171,7 @@ def parse_query_date_anchor(query: str) -> Optional[Tuple[date, date]]:
     return None
 
 
-def node_dates(text: Optional[str], created_at: Optional[datetime]) -> list[date]:
+def node_dates(text: str | None, created_at: datetime | None) -> list[date]:
     """All candidate dates a memory carries: ISO literals in ``text`` + created_at."""
     out: list[date] = []
     if text:
@@ -189,7 +188,7 @@ def node_dates(text: Optional[str], created_at: Optional[datetime]) -> list[date
 
 
 def node_matches_anchor(
-    text: Optional[str], created_at: Optional[datetime], anchor: Tuple[date, date]
+    text: str | None, created_at: datetime | None, anchor: tuple[date, date]
 ) -> bool:
     """True iff any of the memory's candidate dates lies within ``anchor``."""
     start, end = anchor

@@ -1,7 +1,7 @@
 """Cascade reactivation — boost causal neighbors when a node is accessed."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from papez.engine import config
@@ -20,7 +20,7 @@ async def cascade_reactivate(
     Returns list of reactivated node IDs.
     """
     reactivated: list[str] = []
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # BFS traversal
     visited: set[str] = {node_id}

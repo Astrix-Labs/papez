@@ -4,10 +4,11 @@ from __future__ import annotations
 import asyncio
 import json as _json
 from collections import defaultdict
+from collections.abc import Generator
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any
 
 from papez.context import current_org_ids, current_user_id
 from papez.models.edge import MemoryEdge
@@ -215,7 +216,7 @@ class InMemoryGraphProvider:
             return True
         oids = self._get_org_ids(org_ids)
         if oids:
-            for uid, user_nodes in self._user_nodes.items():
+            for user_nodes in self._user_nodes.values():
                 n = user_nodes.get(node_id)
                 if n and n.visibility == Visibility.ORG and n.org_id in oids:
                     return True
@@ -330,10 +331,9 @@ class InMemoryGraphProvider:
         for edge_list in self._user_edges.values():
             for e in edge_list:
                 src, tgt = str(e.source_id), str(e.target_id)
-                if src in promoted_ids or tgt in promoted_ids:
-                    if e.reason and _PII_RE.search(e.reason):
-                        e.reason = _PII_RE.sub("[erased]", e.reason)
-                        edges_scrubbed += 1
+                if (src in promoted_ids or tgt in promoted_ids) and e.reason and _PII_RE.search(e.reason):
+                    e.reason = _PII_RE.sub("[erased]", e.reason)
+                    edges_scrubbed += 1
 
         # Count and remove edges for deleted nodes
         edges_deleted = 0
@@ -478,11 +478,11 @@ class InMemoryGraphProvider:
                 return
 
     async def validate_edge(self, edge_id: str) -> None:
-        from datetime import datetime, timezone
+        from datetime import datetime
         uid = _uid()
         for e in self._user_edges.get(uid, []):
             if str(e.id) == edge_id:
-                e.last_validated_at = datetime.now(timezone.utc)
+                e.last_validated_at = datetime.now(UTC)
                 self._save()
                 return
 
@@ -773,6 +773,4 @@ class InMemoryEventBusProvider:
         try:
             await handler(payload)
         except Exception:
-            logging.getLogger(__name__).error(
-                "Event handler failed", exc_info=True,
-            )
+            logging.getLogger(__name__).exception("Event handler failed")

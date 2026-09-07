@@ -8,12 +8,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The stdio server feature-detects the SDK API; keep both lines covered.
+        mcp: ["mcp>=1.0.0,<2", "mcp>=2"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - run: pip install -e ".[dev]"
+      - run: pip install "${{ matrix.mcp }}"
       - run: python -m pytest tests/ -v --cov=src/papez --cov-report=term-missing --cov-report=xml
       - run: python -m ruff check src/
       - run: python -m mypy src/papez --ignore-missing-imports

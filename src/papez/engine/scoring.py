@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import numpy as np
 
@@ -41,15 +41,14 @@ def base_level_activation(
     Each t_j is the time (in seconds) since the j-th access.
     Uses created_at as fallback if no timestamps are provided.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     ts = timestamps if timestamps else [created_at]
     total = 0.0
     for t in ts:
         if t.tzinfo is None:
-            t = t.replace(tzinfo=timezone.utc)
+            t = t.replace(tzinfo=UTC)
         elapsed = (now - t).total_seconds()
-        if elapsed < 1.0:
-            elapsed = 1.0  # clamp to avoid division issues
+        elapsed = max(elapsed, 1.0)  # clamp to avoid division issues
         total += elapsed ** (-d)
     if total <= 0:
         return -10.0  # effectively zero after exp()
@@ -80,7 +79,7 @@ async def calculate_decay_score(
     relevance = config.RELEVANCE_VECTOR_WEIGHT * vector_sim + config.RELEVANCE_KEYWORD_WEIGHT * keyword_overlap
 
     if context_embedding is None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         days_since_access = (now - node.last_accessed_at).days
         relevance = max(0.1, 1.0 - (days_since_access / 365.0))
 

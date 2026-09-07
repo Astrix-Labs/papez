@@ -4,9 +4,9 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any, Protocol
 
+from papez.models.edge import MemoryEdge
 from papez.models.enums import EdgeType, MemoryStatus
 from papez.models.node import MemoryNode
-from papez.models.edge import MemoryEdge
 
 
 class GraphStorageProvider(Protocol):
