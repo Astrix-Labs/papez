@@ -196,8 +196,17 @@ async def main() -> None:
     graph = providers.graph
     await graph.initialize(STDIO_LOCAL_USER)
 
-    async with stdio_server() as (read_stream, write_stream):
-        await app.run(read_stream, write_stream, app.create_initialization_options())
+    # Forgetting only happens if something runs the sweep. Rescore, transition
+    # and prune on a cadence (GENESYS_MAINTENANCE_INTERVAL_S, default 600s).
+    import asyncio
+    from papez.engine.maintenance import maintenance_loop
+
+    maintenance = asyncio.create_task(maintenance_loop(graph, providers.embeddings, providers.llm))
+    try:
+        async with stdio_server() as (read_stream, write_stream):
+            await app.run(read_stream, write_stream, app.create_initialization_options())
+    finally:
+        maintenance.cancel()
 
 
 if __name__ == "__main__":

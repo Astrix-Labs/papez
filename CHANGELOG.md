@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.2 (unreleased)
+
+### Forgetting now actually runs, and is safe to run
+
+- The stdio server runs a maintenance pass every 10 minutes (`GENESYS_MAINTENANCE_INTERVAL_S`, 0 disables): rescore, status transitions (when an LLM provider is configured), then `sweep_for_forgetting`. Before this release nothing in the library ever called the sweep, so the documented forgetting never happened on a local install.
+- New criterion for pruning: the memory must be idle for `GENESYS_FORGETTING_MIN_IDLE_DAYS` (default 30) on top of low score, orphaned, unpinned, non-core, non-org. An orphan's decay score is zero by construction, so without an idle period every unlinked memory would have been pruned minutes after being stored once the sweep ran.
+- `papez.engine.maintenance.run_maintenance(graph, embeddings, llm)` is public for hosts that drive their own cadence.
+- Org-visible orphans are covered by a unit test; an end-to-end test proves the pass against the real in-memory provider.
+- `pytest tests/` passes on a base dev install: the benchmark test skips when `anthropic` is absent instead of failing collection, and CI no longer excludes it.
+- README states the Python 3.11 floor at the top of Quick Start.
+
 ## 0.6.1
 
 - Pin `mcp>=1.0,<2`. The MCP SDK 2.x removed the low-level `Server.list_tools()` / `call_tool()` decorators, so `papez` 0.6.0 failed at import on a fresh install that resolved to mcp 2.1. Support for the 2.x API is tracked separately.

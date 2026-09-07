@@ -45,6 +45,8 @@ Your AI remembers everything but understands nothing. Papez fixes that.
 
 ## Quick Start
 
+Requires Python 3.11 or newer.
+
 Install the package. The base install has zero database dependencies — state lives in memory and is optionally persisted to a JSON file.
 
 ```bash
@@ -186,7 +188,7 @@ decay_score = relevance × connectivity × reactivation
 
 Because the formula is multiplicative, a memory must score on *all three* axes to survive. A highly connected but never-accessed memory still decays. A frequently recalled but causally orphaned memory still fades.
 
-`decay_score` (aliased `activation` on every hit) is a **retention weight, not a deletion countdown** — recalling a memory *raises* it, and a low score just means "resting," not "doomed." Deletion requires a low score **and** orphaned **and** unpinned **and** non-core **and** non-org, all at once. See [`docs/scoring.md`](docs/scoring.md) for the full model and worked numbers.
+`decay_score` (aliased `activation` on every hit) is a **retention weight, not a deletion countdown** — recalling a memory *raises* it, and a low score just means "resting," not "doomed." Deletion requires a low score **and** orphaned **and** unpinned **and** non-core **and** non-org **and** idle (not stored, recalled or reactivated for 30 days, `GENESYS_FORGETTING_MIN_IDLE_DAYS`), all at once. The stdio server runs the rescore-transition-prune pass every 10 minutes (`GENESYS_MAINTENANCE_INTERVAL_S`; 0 disables it). See [`docs/scoring.md`](docs/scoring.md) for the full model and worked numbers.
 
 ```
 STORE → ACTIVE → DORMANT → FADING → PRUNED

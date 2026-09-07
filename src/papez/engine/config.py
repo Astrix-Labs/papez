@@ -57,6 +57,13 @@ DORMANCY_MAX_REACTIVATIONS = _int("GENESYS_DORMANCY_MAX_REACTIVATIONS", "3")
 # Active Forgetting (forgetting.py)
 # ---------------------------------------------------------------------------
 FORGETTING_THRESHOLD = _float("GENESYS_FORGETTING_THRESHOLD", "0.01")
+# An orphan is only prunable after this many days without a recall. The score
+# alone cannot carry "irrelevant": an orphan's connectivity factor is zero by
+# construction, so its score is zero the moment it is rescored.
+FORGETTING_MIN_IDLE_DAYS = _float("GENESYS_FORGETTING_MIN_IDLE_DAYS", "30")
+# Seconds between maintenance passes (rescore, transitions, forgetting) in the
+# stdio server. 0 disables the loop; the hosted service uses 600 as well.
+MAINTENANCE_INTERVAL_S = _float("GENESYS_MAINTENANCE_INTERVAL_S", "600")
 
 # ---------------------------------------------------------------------------
 # Core Memory Promotion (promoter.py)

@@ -1,21 +1,26 @@
 """Tests for active forgetting — safety-critical conjunctive criteria."""
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock
 
 import pytest
 
 from papez.engine.forgetting import sweep_for_forgetting
-from papez.models.enums import MemoryStatus
+from papez.models.enums import MemoryStatus, Visibility
 from papez.models.node import MemoryNode
 
 
 def _make_orphan_node(**kwargs) -> MemoryNode:
+    long_ago = datetime.now(timezone.utc) - timedelta(days=90)
     defaults = {
         "content_summary": "orphan",
         "decay_score": 0.0,
         "pinned": False,
         "status": MemoryStatus.ACTIVE,
+        # Idle by default so the structural criteria are what each test exercises.
+        "created_at": long_ago,
+        "last_accessed_at": long_ago,
     }
     defaults.update(kwargs)
     return MemoryNode(**defaults)
@@ -95,3 +100,31 @@ class TestForgetting:
         pruned = await sweep_for_forgetting(graph)
         assert len(pruned) == 1
         graph.delete_node.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_no_prune_if_recently_used(self):
+        """A fresh orphan scores zero (connectivity is zero) but must survive:
+        forgetting needs FORGETTING_MIN_IDLE_DAYS of silence, not just a low score."""
+        graph = AsyncMock()
+        now = datetime.now(timezone.utc)
+        graph.get_orphans.return_value = [_make_orphan_node(created_at=now, last_accessed_at=now)]
+        pruned = await sweep_for_forgetting(graph)
+        assert pruned == []
+        graph.delete_node.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_reactivation_counts_as_use(self):
+        graph = AsyncMock()
+        now = datetime.now(timezone.utc)
+        node = _make_orphan_node(reactivation_timestamps=[now - timedelta(days=2)])
+        graph.get_orphans.return_value = [node]
+        pruned = await sweep_for_forgetting(graph)
+        assert pruned == []
+
+    @pytest.mark.asyncio
+    async def test_no_prune_if_org_visible(self):
+        graph = AsyncMock()
+        graph.get_orphans.return_value = [_make_orphan_node(visibility=Visibility.ORG)]
+        pruned = await sweep_for_forgetting(graph)
+        assert pruned == []
+        graph.delete_node.assert_not_called()

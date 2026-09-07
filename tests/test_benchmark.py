@@ -8,6 +8,10 @@ from unittest.mock import AsyncMock
 import numpy as np
 import pytest
 
+# The benchmark runner talks to Anthropic; the judge is optional for the library,
+# so a base dev install skips this module instead of failing collection.
+pytest.importorskip("anthropic")
+
 from benchmarks.baseline_flat import FlatMemoryEntry, FlatVectorMemory
 from benchmarks.run_benchmark import (
     BenchmarkResult,

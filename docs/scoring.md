@@ -208,3 +208,7 @@ only contributes at recall time, so there is no single at-rest value for it.
 - Use `memory_explain` → `score_model` when you want the live per-force
   breakdown.
 - `stability` and `status`/`pinned` are separate levers; pinning beats any score.
+
+## Why forgetting needs an idle period
+
+An orphan has no supportive edges, so its connectivity factor is zero and its decay score is zero the moment it is rescored. If the score alone gated deletion, every unlinked memory would be pruned on the next maintenance pass. Forgetting therefore also requires that the memory has not been stored, recalled or reactivated for `GENESYS_FORGETTING_MIN_IDLE_DAYS` (default 30). That is what makes "irrelevant" a real condition rather than a side effect of "orphaned".
